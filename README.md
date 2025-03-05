@@ -13,26 +13,12 @@ LazerForge is a batteries included template with the following configurations:
 - Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
 - A pre-configured, but still minimal `foundry.toml`
-  - multiple [profiles](#profiles) for various development and testing scenarios
+  - multiple profiles for various development and testing scenarios (see [LazerForge Profiles](exampleTutorial/profiles.md))
   - high optimizer settings by default for gas-efficient smart contracts
   - an explicit `solc` compiler version for reproducible builds
   - no extra injected `solc` metadata for simpler Etherscan verification and [deterministic cross-chain deploys via CREATE2](https://0xfoobar.substack.com/p/vanity-addresses).
   - block height and timestamp variables for [deterministic testing](#deterministic-testing)
   - mapped [network identifiers](#network-identifiers) to RPC URLs and Etherscan API keys using environment variables
-
-## Profiles
-
-The `foundry.toml` comes pre-configured with multiple profiles, which are tailored for different development and testing scenarios.
-
-- **profile.default** is the default config. It sets the compiler version, directories, remappings, block number/timestamp for deterministic testing, bytecode metadata options, and optimizer settings.
-
-- **profile.via_ir** activates `via_ir` pipeline for alternative compilation. It compiles contracts without testing and outputs to a separate directory, which is useful for pre-compiling code before deploying via `vm.getCode`
-
-- **profile.CI.fuzz** overrides default fuzz testing parameters in CI environments with increased fuzzing for quicker local iteration, while still ensuring contracts are well-tested
-
-- **profile.ffi** enables [Foreign Function Interface (FFI)](https://book.getfoundry.sh/forge/differential-ffi-testing?highlight=FFI#primer-the-ffi-cheatcode) for tests that require calling external processes. Specifies a separate test folder and grants read-write permissions to that directory.
-
-- **profile.ffi.fuzz** tailors fuzz testing settings specifically for FFI tests, using a reduced number of runs for faster local iterations.
 
 ## Deterministic Testing
 
