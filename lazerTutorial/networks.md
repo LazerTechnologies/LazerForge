@@ -4,7 +4,7 @@ This guide explains how to configure and use different networks in your LazerFor
 
 ## Network Identifiers
 
-When running commands like `forge verify-contract` (or using the `--verify` flag while [deploying](../README.md#deploy)), you can specify a network via CLI flags (e.g., `--chain sepolia` or `--fork-url <url>`) and Forge will use the corresponding endpoint from the `foundry.toml` configuration.
+When running commands like `forge verify-contract` (or using the `--verify` flag while [deploying](deployment.md)), you can specify a network via CLI flags (e.g., `--chain sepolia` or `--fork-url <url>`) and Forge will use the corresponding endpoint from the `foundry.toml` configuration.
 
 ### RPC Endpoints
 

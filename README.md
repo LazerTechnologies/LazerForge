@@ -13,12 +13,12 @@ LazerForge is a batteries included template with the following configurations:
 - Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
 - A pre-configured, but still minimal `foundry.toml`
-  - multiple profiles for various development and testing scenarios (see [LazerForge Profiles](exampleTutorial/profiles.md))
+  - multiple profiles for various development and testing scenarios (see [LazerForge Profiles](lazerTutorial/profiles.md))
   - high optimizer settings by default for gas-efficient smart contracts
   - an explicit `solc` compiler version for reproducible builds
   - no extra injected `solc` metadata for simpler Etherscan verification and [deterministic cross-chain deploys via CREATE2](https://0xfoobar.substack.com/p/vanity-addresses).
-  - block height and timestamp variables for [deterministic testing](exampleTutorial/testing.md)
-  - mapped [network identifiers](tutorial/networks.md) to RPC URLs and Etherscan API keys using environment variables
+  - block height and timestamp variables for [deterministic testing](lazerTutorial/testing.md)
+  - mapped [network identifiers](lazerTutorial/networks.md) to RPC URLs and Etherscan API keys using environment variables
 
 ## Quick Start
 
@@ -45,11 +45,11 @@ forge build
 
 For detailed guides on various aspects of LazerForge, check out:
 
-- [Setup Guide](exampleTutorial/setup.md) - Initial setup and configuration
-- [Testing Guide](exampleTutorial/testing.md) - Writing and running tests
-- [Deployment Guide](exampleTutorial/deployment.md) - Deploying contracts
-- [Network Configuration](exampleTutorial/networks.md) - Setting up networks and RPC endpoints
-- [Profiles](exampleTutorial/profiles.md) - Using different Foundry profiles
+- [Setup Guide](lazerTutorial/setup.md) - Initial setup and configuration
+- [Testing Guide](lazerTutorial/testing.md) - Writing and running tests
+- [Deployment Guide](lazerTutorial/deployment.md) - Deploying contracts
+- [Network Configuration](lazerTutorial/networks.md) - Setting up networks and RPC endpoints
+- [Profiles](lazerTutorial/profiles.md) - Using different Foundry profiles
 
 ## Reinitialize Submodules
 

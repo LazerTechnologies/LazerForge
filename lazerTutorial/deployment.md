@@ -97,4 +97,4 @@ After deployment, you can verify your contract on Etherscan using:
 forge verify-contract <contract_address> <contract_path> --chain <network>
 ```
 
-Make sure you have the appropriate Etherscan API key set in your environment variables or `foundry.toml`.
+Make sure you have the appropriate Etherscan API key set in your environment variables or `foundry.toml`. For more information on network configuration, see the [Network Configuration](networks.md) guide.
