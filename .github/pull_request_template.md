@@ -6,10 +6,8 @@
 
 - [ ] Change 1
 - [ ] Change 2
-- [ ] Change 3
 
 ## Checklist
 
 - [ ] `forge fmt`
 - [ ] `forge test`
-- [ ] docs are up to date
