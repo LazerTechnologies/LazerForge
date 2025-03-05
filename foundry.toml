@@ -10,7 +10,7 @@ remappings = [
     'solady/=lib/solady/src/',
     'solady-test/=lib/solady/test/',
     'openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/',
-    'openzeppelin-contracts/contracts/=lib/openzeppelin-contracts/contracts/',
+    'openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
     'uniswap-v2-core/=lib/uniswap/v2-core/contracts/',
     'uniswap-v3-core/=lib/uniswap/v3-core/contracts/',
     'uniswap-v3-periphery/=lib/uniswap/v3-periphery/contracts/',
@@ -31,7 +31,7 @@ fs_permissions = [{ access = "read", path = "./via_ir-out" }]
 optimizer_runs = 99_999_999
 
 [rpc_endpoints]
-goerli = "${GOERLI_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
 mainnet = "${ETHEREUM_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
