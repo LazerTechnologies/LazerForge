@@ -1,20 +1,29 @@
 # Testing Guide
 
-This guide covers all aspects of testing in your LazerForge project.
+This guide covers testing smart contracts in your LazerForge project.
 
 ## Deterministic Testing
 
 LazerForge is configured to set fixed values for block height and timestamp which ensures that tests run against a predictable blockchain state. This makes debugging easier and guarantees that time or block-dependent logic behaves reliably.
 
 - These values are called by Anvil and when running `forge test` so make sure to update the `block_number` and `block_timestamp` values in `foundry.toml`
+  - Setting these variables correctly is vital when testing against contracts that are live. For example, if the block height is set to some time in August 2024 but you're testing composability with a contract first deployed in October 2024, the test will fail.
 - Make sure the values are set for the appropriate network you're testing against!
 
 ## Running Tests
 
-Tests are handled through test files, written in Solidity and using the naming convention `Contract.t.sol`
+Tests are handled through test files, written in Solidity and using the naming convention `Contract.t.sol`.
+
+You can run all of your test files at once:
 
 ```shell
 forge test
+```
+
+or specify a certain file, and optionally test:
+
+```bash
+forge test --match-path test/Contract.t.sol --match-test test_Deposit
 ```
 
 ## Gas Snapshots
@@ -46,11 +55,11 @@ To generate reports, run
 Tests in LazerForge follow best practices for smart contract testing:
 
 1. Use descriptive test names that explain what is being tested
-2. Group related tests using `describe` blocks
-3. Use `setUp` functions to initialize common test state
-4. Test both positive and negative cases
-5. Use assertions to verify expected behavior
-6. Test edge cases and boundary conditions
+2. Use `setUp` functions to initialize common test state
+   - anything defined in `setUp()` is used for the entirety of that test contract
+3. Test both positive and negative cases
+4. Use assertions to verify expected behavior
+5. Test edge cases and boundary conditions
 
 Example test structure:
 
@@ -69,3 +78,10 @@ contract MyContractTest is Test {
     }
 }
 ```
+
+---
+
+**Navigation:**
+
+- [← Back: Setup Guide](setup.md)
+- [Next: Deployment Guide →](deployment.md)

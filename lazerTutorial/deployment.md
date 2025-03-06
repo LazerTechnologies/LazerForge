@@ -4,7 +4,7 @@ This guide covers how to deploy contracts using LazerForge.
 
 ## Quick Deploy Guide
 
-To deploy a contract to the Goerli testnet, fund an address with 0.1 Goerli ETH, open a terminal window, and run the following commands:
+To deploy a contract to the Sepolia testnet, fund an address with 0.1 Sepolia ETH, open a terminal window, and run the following commands:
 
 Create a directory and `cd` into it:
 
@@ -39,11 +39,11 @@ Install dependencies and compile the contracts:
 forge build
 ```
 
-Set up your environment variables (make sure to swap in the appropriate value for `<your_pk>`):
+Fill in necessary environment variables for the network you are deploying on. It's good practice to always deploy first to a testnet like Sepolia before deploying to a non-test network.
 
 ```bash
-export GOERLI_RPC_URL='https://eth-goerli.g.alchemy.com/v2/demo' &&
-export DEPLOYER_PRIVATE_KEY='<your_pk>'
+SEPOLIA_RPC_URL='https://eth-sepolia.g.alchemy.com/v2/demo'
+DEPLOYER_PRIVATE_KEY='<your_pk>'
 ```
 
 ⚠️ **Follow proper `.env` and `.gitignore` practices to prevent leaked keys.**
@@ -56,11 +56,13 @@ Deployments are handled through script files, written in Solidity and using the 
 forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> --private-key <your_private_key> --chain-id <chain_id> -vv
 ```
 
-> 💡 If a deployment script contains multiple functions, you can run a single function by appending the file name in the previous script like this `forge script script/MyScript.s.sol:MyFunction`.
+> 💡 It is best practice to keep all scripts related to a contract in a single script file, for example `MyToken` may have functions to `Deploy` and `Mint`. You can run a single function by appending the file name in the previous script like this `forge script script/MyScript.s.sol:MyFunction`.
 
 Unless you include the `--broadcast` argument, the script will be run in a simulated environment. If you need to run the script live, use the `--broadcast` arg
 
 ⚠️ **Using `--broadcast` will initiate an onchain transaction, only use after thoroughly testing**
+
+### Broadcast
 
 ```bash
 forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> --private-key <your_private_key> --chain-id 1 -vv --broadcast
@@ -74,9 +76,9 @@ forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> -
 
 ## Secure Private Key Handling
 
-You can pass a private key directly into script functions to prevent exposing it in the command line (recommended).
+You can make a private key available to a script directly to prevent exposing it in the command line (recommended).
 
-⚠️ **NEVER place your private key inside of a script, always use secure environment variables!**
+⚠️ **NEVER place your private key in a script in plaintext, always use environment variables!**
 
 ```js
 function run() public {
@@ -98,3 +100,10 @@ forge verify-contract <contract_address> <contract_path> --chain <network>
 ```
 
 Make sure you have the appropriate Etherscan API key set in your environment variables or `foundry.toml`. For more information on network configuration, see the [Network Configuration](networks.md) guide.
+
+---
+
+**Navigation:**
+
+- [← Back: Testing Guide](testing.md)
+- [Next: Network Configuration →](networks.md)

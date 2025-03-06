@@ -1,19 +1,19 @@
 # Understanding Foundry Profiles
 
-Foundry profiles are a powerful way to manage different configurations for your smart contract development workflow. Think of them as different "modes" or "settings" that you can switch between depending on your needs.
+Foundry profiles let you manage different configurations for your smart contract development workflow. Think of them like "modes" or "settings" that you can switch between depending on your needs.
 
 ## What are Profiles?
 
 Profiles in Foundry are named configuration sets that you can use to:
 
-- Optimize for different scenarios (gas, testing, deployment)
-- Use different compiler settings
-- Configure different testing parameters
-- Set up different build environments
+- optimize for different scenarios (gas, testing, deployment)
+- use different compiler settings
+- configure different testing parameters
+- set up different build environments
 
 ## Available Profiles in LazerForge
 
-LazerForge comes with several pre-configured profiles:
+LazerForge comes packaged with several pre-configured profiles:
 
 ### Default Profile
 
@@ -25,9 +25,9 @@ forge build
 
 The default profile is used when no profile is specified. It includes:
 
-- Standard compiler settings
-- Basic optimization
-- Normal testing parameters
+- standard compiler settings
+- basic optimization
+- normal testing parameters
 
 ### Gas Optimization Profile
 
@@ -37,9 +37,9 @@ forge build --profile gas
 
 Use this profile when you want to:
 
-- Optimize your contracts for gas efficiency
-- Deploy to production
-- Compare gas costs between different implementations
+- optimize your contracts for gas efficiency
+- deploy to production
+- compare gas costs between different implementations
 
 ### CI Fuzz Testing Profile
 
@@ -49,9 +49,9 @@ forge test --profile CI.fuzz
 
 This profile is designed for CI environments with:
 
-- Increased number of fuzz runs (1024)
-- More thorough testing
-- Better coverage
+- increased number of fuzz runs (1024)
+- more thorough testing
+- better coverage
 
 ### Via-IR Profile
 
@@ -61,9 +61,9 @@ forge build --profile via_ir
 
 Use this profile when:
 
-- Working with complex contracts
-- Need to use the via-IR pipeline
-- Dealing with large contract sizes
+- working with complex contracts
+- need to use the via-IR pipeline
+- dealing with large contract sizes
 
 ### FFI Profile
 
@@ -74,8 +74,8 @@ forge test --profile ffi
 For tests that require:
 
 - Foreign Function Interface (FFI)
-- External process calls
-- System-level interactions
+- external process calls
+- system-level interactions
 
 ## How to Use Profiles
 
@@ -101,9 +101,6 @@ You can set a profile for all commands in your current shell:
 ```bash
 # Set profile for current shell
 export FOUNDRY_PROFILE=gas
-
-# Or for a single command
-FOUNDRY_PROFILE=gas forge build
 ```
 
 ### 3. In Deployment Scripts
@@ -162,6 +159,8 @@ optimizer_runs = 200
 fuzz_runs = 500
 ```
 
+> Any settings not specified within a profile will use the `default` settings. Make sure to override settings from `profile.default` with a custom profile when needed.
+
 ## Best Practices
 
 1. **Use Appropriate Profiles**
@@ -174,7 +173,6 @@ fuzz_runs = 500
 
    - Add comments in your `foundry.toml`
    - Document profile requirements in your README
-   - Explain when to use each profile
 
 3. **CI/CD Considerations**
 
@@ -185,3 +183,21 @@ fuzz_runs = 500
    - Start with default profile for development
    - Switch to `gas` profile before deployment
    - Use `via_ir` when needed for complex contracts
+
+## Profile Inheritance
+
+Profiles can inherit from other profiles using the `inherits` field. This allows you to build upon existing configurations while adding or overriding specific settings.
+
+```toml
+[profile.production]
+inherits = "default"
+optimizer = true
+optimizer_runs = 1000
+```
+
+---
+
+**Navigation:**
+
+- [← Back: Network Configuration](networks.md)
+- [Next: Appendix →](Appendix.md)

@@ -22,3 +22,15 @@ reinit() {
 ## Additional Resources
 
 - [Understanding Foundry Profiles](profiles.md) - A comprehensive guide to using different Foundry profiles for development, testing, and deployment.
+- [Foundry Book](https://book.getfoundry.sh/)
+- [Solidity Documentation](https://docs.soliditylang.org/)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts)
+- [Solady Contracts](https://github.com/vectorized/solady)
+- [Ethereum Development Documentation](https://ethereum.org/en/developers/docs/)
+
+---
+
+**Navigation:**
+
+- [← Back: Profiles](profiles.md)
+- [Back to Tutorial Overview →](README.md)

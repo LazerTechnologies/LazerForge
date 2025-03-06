@@ -8,7 +8,7 @@ Before starting with LazerForge, make sure you have the following installed:
 
 1. Git
 2. Node.js (for development tools)
-3. A code editor (VSCode recommended)
+3. Code editor (VSCode + Solidity extension recommended)
 
 ## Installation
 
@@ -33,21 +33,22 @@ forge build
 
 ## Environment Setup
 
-1. Create a `.env` file in your project root:
+1. Copy `sample.env` into a new local `.env` file in your project root:
 
 ```bash
-touch .env
+cp sample.env .env
+
 ```
 
 2. Add your environment variables to `.env`:
 
 ```env
-GOERLI_RPC_URL='your-rpc-url'
+SEPOLIA_RPC_URL='your-rpc-url'
 ETHERSCAN_API_KEY='your-api-key'
 DEPLOYER_PRIVATE_KEY='your-private-key'
 ```
 
-3. Add `.env` to your `.gitignore`:
+3. Ensure `.env` is included in your `.gitignore`:
 
 ```bash
 echo ".env" >> .gitignore
@@ -58,27 +59,27 @@ echo ".env" >> .gitignore
 LazerForge comes pre-configured with VSCode settings:
 
 - `forge fmt` is set as the default formatter for Solidity files
-- Recommended extensions are suggested
-- Editor settings are optimized for Solidity development
+- Recommended extensions: [Solidity](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity)
 
 ## Project Structure
 
-```
-├── src/                    # Source files
-├── test/                   # Test files
-├── script/                 # Deployment scripts
-├── .github/               # GitHub Actions workflows
-├── foundry.toml           # Foundry configuration
-└── remappings.txt         # Solidity import remappings
+```bash
+├── src/                               # example contracts
+│   └── utils/                       # utility contracts
+├── test/                              # test files
+├── script/                           # example scripts
+├── .github/                        # GitHub Actions workflows
+├── lazerTutorial/               # LazerForge tutorial
+└── foundry.toml                # foundry config
 ```
 
 ## Dependencies
 
-LazerForge includes several key dependencies:
+LazerForge comes with some common dependencies out of the box:
 
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts)
 - [Solady](https://github.com/Vectorized/solady)
-- Uniswap suite:
+- Uniswap
   - [v2](https://github.com/uniswap/v2-core)
   - [v3-core](https://github.com/uniswap/v3-core)
   - [v3-periphery](https://github.com/uniswap/v3-periphery)
@@ -93,3 +94,10 @@ After setup, you can:
 2. [Deploy contracts](deployment.md)
 3. [Configure networks](networks.md)
 4. [Use different profiles](profiles.md)
+
+---
+
+**Navigation:**
+
+- [← Back to Tutorial Overview](README.md)
+- [Next: Testing Guide →](testing.md)

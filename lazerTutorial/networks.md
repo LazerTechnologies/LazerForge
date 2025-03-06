@@ -44,3 +44,10 @@ mainnet = "${MAINNET_RPC_URL}"
 goerli = { key = "${ETHERSCAN_API_KEY}" }
 mainnet = { key = "${ETHERSCAN_API_KEY}" }
 ```
+
+---
+
+**Navigation:**
+
+- [← Back: Deployment Guide](deployment.md)
+- [Next: Profiles →](profiles.md)
