@@ -17,6 +17,9 @@ contract Rescue {
     error Failed();
     error NotOwner();
 
+    event ETHWithdrawn(address indexed recipient, uint256 amount);
+    event ERC20Withdrawn(address indexed token, address indexed recipient, uint256 amount);
+
     address public owner;
 
     constructor() {
@@ -34,17 +37,19 @@ contract Rescue {
         uint256 balance = address(this).balance;
         (bool sent,) = recipient.call{value: balance}("");
         if (!sent) revert Failed();
+        emit ETHWithdrawn(recipient, balance);
     }
 
     function withdrawETH(address payable recipient, uint256 amount) external onlyOwner {
         require(amount <= address(this).balance, "Insufficient balance");
         (bool sent,) = recipient.call{value: amount}("");
         if (!sent) revert Failed();
+        emit ETHWithdrawn(recipient, amount);
     }
 
-    // Withdraw ERC20 tokens from the contract
     function withdrawERC20(address token, address recipient, uint256 amount) external onlyOwner {
         bool sent = IERC20(token).transfer(recipient, amount);
         if (!sent) revert Failed();
+        emit ERC20Withdrawn(token, recipient, amount);
     }
 }
