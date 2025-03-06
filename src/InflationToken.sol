@@ -30,6 +30,9 @@ contract InflationToken is ERC20, ERC20Burnable, Ownable {
     error CannotMintToBlockedAddress();
     error MintCapExceeded();
 
+    event TokensRecovered(address indexed token, address indexed recipient, uint256 amount);
+    event TokensMinted(address indexed recipient, uint256 amount);
+
     constructor() ERC20(TOKEN_NAME, TOKEN_SYMBOL) Ownable() {
         _mint(msg.sender, TOKEN_INITIAL_SUPPLY * 10 ** decimals());
         mintingAllowedAfter = block.timestamp + MINIMUM_TIME_BETWEEN_MINTS;
@@ -51,6 +54,7 @@ contract InflationToken is ERC20, ERC20Burnable, Ownable {
         // enforce 365 day period between mints
         mintingAllowedAfter = block.timestamp + MINIMUM_TIME_BETWEEN_MINTS;
         _mint(to, MINT_CAP);
+        emit TokensMinted(to, MINT_CAP);
     }
 
     /**
@@ -61,5 +65,6 @@ contract InflationToken is ERC20, ERC20Burnable, Ownable {
      */
     function recoverTokens(address token, uint256 amount, address to) external onlyOwner {
         IERC20(token).safeTransfer(to, amount);
+        emit TokensRecovered(token, to, amount);
     }
 }
