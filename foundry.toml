@@ -41,6 +41,11 @@ ethereum = { key = "${ETHERSCAN_API_KEY}"}
 base = { key = "${BASESCAN_API_KEY}"}
 base_sepolia = { key = "${BASESCAN_API_KEY}"}
 
+[wallet]
+mnemonic = "${MNEMONIC}"
+derivation_path = "m/44'/60'/0'/0/"
+
+
 # via_ir pipeline is very slow - use a separate profile to pre-compile and then use vm.getCode to deploy
 [profile.via_ir]
 via_ir = true

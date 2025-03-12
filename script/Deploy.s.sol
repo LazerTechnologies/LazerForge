@@ -13,9 +13,11 @@ import "../src/BalanceManager.sol";
  *         --fork-url $GOERLI_RPC_URL --broadcast`.
  */
 contract DeployScript is Script {
-    function run() public {
-        vm.broadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
-        BalanceManager balanceManager = new BalanceManager(address(0));
-        console.log("BalanceManager deployed at:", address(balanceManager));
-    }
+  function run() public {
+    string memory mnemonic = vm.envString("MNEMONIC");
+    uint256 privateKey = vm.deriveKey(mnemonic, 0); // Standard HD path
+    vm.startBroadcast(privateKey); 
+    BalanceManager balanceManager = new BalanceManager(address(0));
+    console.log("BalanceManager deployed at:", address(balanceManager));
+  }
 }
