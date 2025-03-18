@@ -35,7 +35,7 @@ foundryup
 forge init --template lazertechnologies/lazerforge <project_name>
 ```
 
-> 💡 To install a minimal template without tutorials and extra dependencies:
+> 💡 To install a [minimal](#branch-structure) template without tutorials and extra dependencies:
 >
 > ```bash
 > forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
@@ -46,6 +46,15 @@ forge init --template lazertechnologies/lazerforge <project_name>
 ```bash
 forge build
 ```
+
+## Branch Structure
+
+LazerForge maintains two primary branches to cater to different needs:
+
+- **`main` Branch**: Contains tutorials, additional example contracts, and comprehensive dependencies.
+- **`minimal` Branch**: Provides a lightweight template without extra tutorials and dependencies.
+
+For detailed info on branches and contribution, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## Documentation
 
