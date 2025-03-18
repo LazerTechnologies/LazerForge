@@ -35,11 +35,11 @@ foundryup
 forge init --template lazertechnologies/lazerforge <project_name>
 ```
 
-💡 To install a minimal template without tutorials and extra dependencies:
-
-```bash
-forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
-```
+> 💡 To install a minimal template without tutorials and extra dependencies:
+>
+> ```bash
+> forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
+> ```
 
 1. Build the project:
 
