@@ -1,0 +1,31 @@
+name: Branch Consistency Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - minimal
+
+jobs:
+  consistency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Check consistency of critical files
+      - name: Compare Critical Files
+        run: |
+          # List of files to compare
+          critical_files=(
+            "foundry.toml"
+            ".gitignore"
+            "LICENSE"
+            "sample.env"
+          )
+
+          for file in "${critical_files[@]}"; do
+            if ! git diff --quiet origin/main origin/minimal -- "$file"; then
+              echo "Inconsistency detected in $file"
+              exit 1
+            fi
+          done
