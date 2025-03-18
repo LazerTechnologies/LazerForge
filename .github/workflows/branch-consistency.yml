@@ -11,10 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all branches and history
 
       # Check consistency of critical files
       - name: Compare Critical Files
         run: |
+          # Ensure both branches exist
+          git branch -r
+
           # List of files to compare
           critical_files=(
             "foundry.toml"
@@ -23,9 +28,29 @@ jobs:
             "sample.env"
           )
 
-          for file in "${critical_files[@]}"; do
-            if ! git diff --quiet origin/main origin/minimal -- "$file"; then
+          # Function to compare files
+          compare_files() {
+            local file="$1"
+            echo "Comparing $file"
+            
+            # Get file contents from both branches
+            main_content=$(git show main:"$file" 2>/dev/null || echo "")
+            minimal_content=$(git show minimal:"$file" 2>/dev/null || echo "")
+
+            # Compare contents
+            if [ "$main_content" != "$minimal_content" ]; then
               echo "Inconsistency detected in $file"
+              echo "Main branch content:"
+              echo "$main_content"
+              echo "Minimal branch content:"
+              echo "$minimal_content"
               exit 1
             fi
+          }
+
+          # Compare each critical file
+          for file in "${critical_files[@]}"; do
+            compare_files "$file"
           done
+
+          echo "All critical files are consistent between branches."
