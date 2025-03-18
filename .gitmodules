@@ -7,18 +7,3 @@
 [submodule "lib/openzeppelin-contracts"]
 	path = lib/openzeppelin-contracts
 	url = https://github.com/openzeppelin/openzeppelin-contracts
-[submodule "lib/uniswap/v2-core"]
-	path = lib/uniswap/v2-core
-	url = https://github.com/Uniswap/v2-core
-[submodule "lib/uniswap/v3-core"]
-	path = lib/uniswap/v3-core
-	url = https://github.com/Uniswap/v3-core
-[submodule "lib/uniswap/v3-periphery"]
-	path = lib/uniswap/v3-periphery
-	url = https://github.com/Uniswap/v3-periphery
-[submodule "lib/uniswap/v4-core"]
-	path = lib/uniswap/v4-core
-	url = https://github.com/Uniswap/v4-core
-[submodule "lib/uniswap/v4-periphery"]
-	path = lib/uniswap/v4-periphery
-	url = https://github.com/Uniswap/v4-periphery

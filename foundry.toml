@@ -11,11 +11,6 @@ remappings = [
     'solady-test/=lib/solady/test/',
     'openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/',
     'openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
-    'uniswap-v2-core/=lib/uniswap/v2-core/contracts/',
-    'uniswap-v3-core/=lib/uniswap/v3-core/contracts/',
-    'uniswap-v3-periphery/=lib/uniswap/v3-periphery/contracts/',
-    'uniswap-v4-core/=lib/uniswap/v4-core/src/',
-    'uniswap-v4-periphery/=lib/uniswap/v4-periphery/src/'
 ]
 # ensure that block number + timestamp are realistic when running tests
 block_number = 17722462
