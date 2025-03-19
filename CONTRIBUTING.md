@@ -1,3 +1,11 @@
+# Contributing
+
+The goal of this repo is to provide not only an optimized configuration for experienced Solidity developers but to also serve as a starting point for developers who are new to Foundry or Solidity. We're looking in particular for the following Contributions to the `main` branch:
+
+- Reusable utility and library contracts that add value to LazerForge as a template
+- Expanded [tutorials](/lazerTutorial/README.md) on smart contract development and testing in foundry
+- Helpful test examples
+
 ## Branch Structure and Guidelines
 
 ### Branch Overview
@@ -21,7 +29,7 @@ This repository maintains two primary branches with distinct purposes:
   - Direct merges between these branches are prohibited
   - Branch protection rules are in place to prevent accidental merging
 
-### Contributing
+### Config Contributions
 
 - If you want to contribute changes that should apply to both branches:
   1. Make changes in the `main` branch first
