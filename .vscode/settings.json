@@ -1,4 +1,6 @@
 {
   "solidity.formatter": "forge",
-  "solidity.defaultCompiler": "localFile"
+  "solidity.defaultCompiler": "localFile",
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "solidity.packageDefaultDependenciesContractsDirectory": "src"
 }
