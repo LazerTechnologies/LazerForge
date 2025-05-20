@@ -1,0 +1,40 @@
+# .github/workflows/prevent-direct-merges.yml
+name: Prevent Direct Merges
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for direct merges between main and minimal
+        run: |
+          BASE="${{ github.event.pull_request.base.ref }}"
+          HEAD="${{ github.event.pull_request.head.ref }}"
+
+          # Block direct merges between main and minimal
+          if [[ "$BASE" == "main" && "$HEAD" == "minimal" ]]; then
+            echo "::error::Direct merges from minimal to main are not allowed. Please use the sync-to-main script instead."
+            exit 1
+          fi
+
+          if [[ "$BASE" == "minimal" && "$HEAD" == "main" ]]; then
+            echo "::error::Direct merges from main to minimal are not allowed. Please use the sync-to-minimal script instead."
+            exit 1
+          fi
+
+          # Allow sync branches explicitly
+          if [[ "$BASE" == "minimal" && "$HEAD" == "sync-branch" ]]; then
+            echo "Sync branch to minimal is allowed"
+            exit 0
+          fi
+
+          if [[ "$BASE" == "main" && "$HEAD" == "sync-branch-reverse" ]]; then
+            echo "Sync branch to main is allowed"
+            exit 0
+          fi
+
+          # All other PRs are allowed
+          echo "Regular feature branch PR - allowed"
