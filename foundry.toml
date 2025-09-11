@@ -40,6 +40,10 @@ base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
 ethereum = { key = "${ETHERSCAN_API_KEY}"}
 base = { key = "${BASESCAN_API_KEY}"}
 base_sepolia = { key = "${BASESCAN_API_KEY}"}
+anvil = "http://127.0.0.1:8545"
+
+[etherscan]
+anvil = { key = "" }
 
 # via_ir pipeline is very slow - use a separate profile to pre-compile and then use vm.getCode to deploy
 [profile.via_ir]
@@ -67,5 +71,44 @@ runs = 5
 optimizer = true
 optimizer_runs = 1000000
 via_ir = true
+
+# Local anvil profile
+[profile.anvil]
+evm_version = 'shanghai' # update to desired version
+optimizer = true
+optimizer_runs = 500_000
+
+broadcast = true         # write to ./broadcast by default on scripts
+retries = 10
+retries_delay_ms = 500
+
+# paste an anvil-generated account here
+# sender = "0x..."
+
+# Testing knobs for local chain realism and speed
+[profile.anvil.fuzz]
+runs = 64
+
+# If you use forked anvil often, set a default fork here (optional)
+# [profile.anvil.rpc_storage_caching]
+# chains = ["anvil"]
+
+# Permissions for scripts that need artifacts/IO locally (inherits your default, add more if needed)
+[profile.anvil.fs_permissions]
+# carry over the via_ir read permission
+# additional example:
+# { access = "read-write", path = "./broadcast" }
+
+# Gas reporting locally (optional)
+[profile.anvil.gas_reports]
+# contracts = ["MyContract","AnotherContract"]
+
+# If you want Foundry to assume Cancun opcodes/behavior in tests
+[profile.anvil.evm_config]
+# chain_id = 31337
+# base_fee = 0         # make txs “free”; anvil often uses 0 by default
+# block_gas_limit = "30000000"
+# eip1559 = true
+# create2_deployer = "0x0000000000..."
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
