@@ -1,7 +1,7 @@
 [profile.default]
 # update solc values if needed for compatability with older contracts
 auto_detect_solc = false
-solc = '0.8.20'
+solc = '0.8.28'
 src = "src"
 out = "out"
 libs = ["lib"]
@@ -74,7 +74,7 @@ via_ir = true
 
 # Local anvil profile
 [profile.anvil]
-evm_version = 'shanghai' # update to desired version
+evm_version = 'prague'
 optimizer = true
 optimizer_runs = 500_000
 
