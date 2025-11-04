@@ -31,11 +31,13 @@ sepolia = "${SEPOLIA_RPC_URL}"
 mainnet = "${ETHEREUM_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+anvil = "http://127.0.0.1:8545"
 
 [etherscan]
 ethereum = { key = "${ETHERSCAN_API_KEY}"}
 base = { key = "${BASESCAN_API_KEY}"}
 base_sepolia = { key = "${BASESCAN_API_KEY}"}
+anvil = { key = "" }
 
 # via_ir pipeline is very slow - use a separate profile to pre-compile and then use vm.getCode to deploy
 [profile.via_ir]
