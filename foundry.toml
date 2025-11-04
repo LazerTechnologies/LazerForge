@@ -1,7 +1,8 @@
 [profile.default]
 # update solc values if needed for compatability with older contracts
 auto_detect_solc = false
-solc = '0.8.20'
+solc = '0.8.28'
+evm_version = "prague"
 src = "src"
 out = "out"
 libs = ["lib"]
