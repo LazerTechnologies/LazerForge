@@ -53,6 +53,43 @@ This repository maintains two primary branches with distinct purposes:
   git commit -m "Selectively update minimal branch"
   ```
 
-### Questions or Clarifications
+## Syncing Changes Between Branches
+
+We use a dedicated synchronization workflow to maintain consistency between branches while respecting their different purposes.
+
+**To sync changes from `main` to `minimal`:**
+
+1. Ensure your changes are merged to `main` first
+2. Run the sync script:
+
+```bash
+./tools/sync-to-minimal.sh
+```
+
+3. The script will:
+
+   - Update a dedicated sync branch with the latest from `main`
+   - Open a PR creation page targeting `minimal`
+
+4. During PR review:
+   - Verify only appropriate files are included
+   - Exclude tutorial content or other files not needed in `minimal`
+
+**For emergency fixes in `minimal`:**
+
+If you need to make a hotfix directly to `minimal` and then sync back to `main`:
+
+1. Make and merge your changes to `minimal`
+2. Run:
+
+```bash
+./tools/sync-to-main.sh
+```
+
+3. Complete a PR to sync these changes back to `main`
+
+> Always make feature development PRs to `main` first, and use the sync scripts rather than manually cherry-picking to maintain consistency.
+
+## Questions or Clarifications
 
 If you have any questions about the branch structure or contribution process, please open an issue in the repository.
