@@ -29,17 +29,24 @@ curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
 
-2. Create a new project:
+2. Create a new project using one of the templates:
+
+Full repo with example contracts, Uniswap dependencies, and docs:
 
 ```bash
 forge init --template lazertechnologies/lazerforge <project_name>
 ```
 
-> 💡 To install a [minimal](#branch-structure) template without tutorials and extra dependencies:
->
-> ```bash
-> forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
-> ```
+[Minimal repo](#branch-structure) with just optimized config:
+
+```bash
+forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
+```
+
+- DeFi Starter: 🚧 coming soon
+- NFT Starter: 🚧 coming soon
+- Stablecoin Starter: 🚧 coming soon
+- Cross-Chain starter: 🚧 coming soon
 
 1. Build the project:
 
