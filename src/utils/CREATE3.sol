@@ -83,7 +83,9 @@ library CREATE3 {
             deployed := keccak256(0x1e, 0x17)
             if iszero(
                 mul( // The arguments of `mul` are evaluated last to first.
-                extcodesize(deployed), call(gas(), proxy, value, add(initCode, 0x20), mload(initCode), 0x00, 0x00))
+                    extcodesize(deployed),
+                    call(gas(), proxy, value, add(initCode, 0x20), mload(initCode), 0x00, 0x00)
+                )
             ) {
                 mstore(0x00, 0x30116425) // `DeploymentFailed()`.
                 revert(0x1c, 0x04)
