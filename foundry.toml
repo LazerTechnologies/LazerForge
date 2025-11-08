@@ -9,8 +9,14 @@ remappings = [
     'forge-std/=lib/forge-std/src',
     'solady/=lib/solady/src/',
     'solady-test/=lib/solady/test/',
+    '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
     'openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/',
     'openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
+    '@uniswap/v2-core/=lib/uniswap/v2-core/contracts/',
+    '@uniswap/v3-core/=lib/uniswap/v3-core/contracts/',
+    '@uniswap/v3-periphery/=lib/uniswap/v3-periphery/contracts/',
+    '@uniswap/v4-core/=lib/uniswap/v4-core/src/',
+    '@uniswap/v4-periphery/=lib/uniswap/v4-periphery/src/',
     'uniswap-v2-core/=lib/uniswap/v2-core/contracts/',
     'uniswap-v3-core/=lib/uniswap/v3-core/contracts/',
     'uniswap-v3-periphery/=lib/uniswap/v3-periphery/contracts/',
@@ -75,16 +81,17 @@ evm_version = 'prague'
 optimizer = true
 optimizer_runs = 500_000
 
-broadcast = true         # write to ./broadcast by default on scripts
-retries = 10
-retries_delay_ms = 500
-
 # paste an anvil-generated account here
 # sender = "0x..."
 
 # Testing knobs for local chain realism and speed
 [profile.anvil.fuzz]
 runs = 64
+
+# Broadcast configuration - write to ./broadcast by default on scripts
+[profile.anvil.broadcast]
+retries = 10
+retries_delay_ms = 500
 
 # If you use forked anvil often, set a default fork here (optional)
 # [profile.anvil.rpc_storage_caching]
@@ -99,13 +106,5 @@ runs = 64
 # Gas reporting locally (optional)
 [profile.anvil.gas_reports]
 # contracts = ["MyContract","AnotherContract"]
-
-# If you want Foundry to assume Cancun opcodes/behavior in tests
-[profile.anvil.evm_config]
- chain_id = 31337
-# base_fee = 0         # make txs “free”; anvil often uses 0 by default
-# block_gas_limit = "30000000"
-# eip1559 = true
-# create2_deployer = "0x0000000000..."
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
