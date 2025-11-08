@@ -58,16 +58,6 @@ For detailed info on branches and contribution, check out the [Contributing Guid
 
 > See [sync script usage](CONTRIBUTING.md#syncing-changes-between-branches) for automating branch sync.
 
-## Documentation
-
-For detailed guides on various aspects of LazerForge, check out:
-
-- [Setup Guide](lazerTutorial/setup.md) - Initial setup and configuration
-- [Testing Guide](lazerTutorial/testing.md) - Writing and running tests
-- [Deployment Guide](lazerTutorial/deployment.md) - Deploying contracts
-- [Network Configuration](lazerTutorial/networks.md) - Setting up networks and RPC endpoints
-- [Profiles](lazerTutorial/profiles.md) - Using different Foundry profiles
-
 ## Reinitialize Submodules
 
 When working across branches with different dependencies, submodules may need to be reinitialized. Run
@@ -99,3 +89,13 @@ To generate reports, run
 ```bash
 ./coverage-report
 ```
+
+## Documentation
+
+For detailed guides on various aspects of LazerForge, check out:
+
+- [Setup Guide](lazerTutorial/setup.md) - Initial setup and configuration
+- [Testing Guide](lazerTutorial/testing.md) - Writing and running tests
+- [Deployment Guide](lazerTutorial/deployment.md) - Deploying contracts
+- [Network Configuration](lazerTutorial/networks.md) - Setting up networks and RPC endpoints
+- [Profiles](lazerTutorial/profiles.md) - Using different Foundry profiles
