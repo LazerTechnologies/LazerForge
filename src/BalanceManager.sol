@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.24;
 
-import "openzeppelin-contracts/token/ERC20/IERC20.sol";
-import "openzeppelin-contracts/access/Ownable.sol";
-import "openzeppelin-contracts/security/ReentrancyGuard.sol";
+import {IERC20} from "openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Ownable} from "openzeppelin/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
  * @title Balance Manager
@@ -29,14 +29,20 @@ contract BalanceManager is Ownable, ReentrancyGuard {
     event Funded(address indexed token, uint256 amount);
     event TokensWithdrawn(address indexed token, uint256 amount, address indexed to);
 
+    error ContractCannotBeTheUser();
+
     modifier onlyAdmin() {
         require(admins[msg.sender], "Caller is not an admin");
         _;
     }
 
     modifier notContract(address user) {
-        require(user != address(this), "Contract cannot be the user");
+        _notContract(user);
         _;
+    }
+
+    function _notContract(address user) internal view {
+        if (user == address(this)) revert ContractCannotBeTheUser();
     }
 
     constructor(address initialOwner) Ownable() {}
