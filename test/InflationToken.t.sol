@@ -27,7 +27,7 @@ contract InflationTokenTest is Test {
         console.log("Setup completed. Owner address:", _owner, "User address:", _user);
     }
 
-    function testInitialSupply() public {
+    function test_initialSupply() public {
         uint256 initialSupply = 1_000_000_000 * 10 ** _token.decimals();
         console.log("Testing Initial Supply");
         console.log("Expected initial supply:", initialSupply);
@@ -38,7 +38,7 @@ contract InflationTokenTest is Test {
         assertEq(_token.balanceOf(_owner), initialSupply);
     }
 
-    function testInflation() public {
+    function test_inflation() public {
         uint256 initialSupply = 1_000_000_000 * 10 ** _token.decimals();
 
         // Try minting after 1 day - should fail
@@ -66,7 +66,7 @@ contract InflationTokenTest is Test {
         assertEq(_token.totalSupply(), initialSupply + (_token.MINT_CAP() * 2));
     }
 
-    function testMintToContractAddressBlocked() public {
+    function test_mintToContractAddressBlocked() public {
         vm.warp(block.timestamp + 365 days);
 
         console.log("Attempting to mint to contract address, expecting revert");
@@ -74,7 +74,7 @@ contract InflationTokenTest is Test {
         _token.mint(address(_token));
     }
 
-    function testRecoverTokens() public {
+    function test_recoverTokens() public {
         vm.warp(block.timestamp + 365 days);
         _token.mint(_owner);
         _token.transfer(address(_token), _token.MINT_CAP());
@@ -95,7 +95,7 @@ contract InflationTokenTest is Test {
         assertEq(ownerBalanceAfter, ownerBalanceBefore + _token.MINT_CAP());
     }
 
-    function testTotalSupplyAfterInflation() public {
+    function test_totalSupplyAfterInflation() public {
         console.log("Testing Total Supply After Inflation for 5 years");
         console.log("Inflation is a constant 5% of the initial supply each year");
         uint256 initialSupply = 1_000_000_000 * 10 ** _token.decimals();
@@ -111,13 +111,13 @@ contract InflationTokenTest is Test {
         }
     }
 
-    function testTransferOwnership() public {
+    function test_transferOwnership() public {
         console.log("Testing Ownership Transfer");
         _token.transferOwnership(_user);
         console.log("Ownership transferred to user");
     }
 
-    function testTokenTransfers() public {
+    function test_tokenTransfers() public {
         console.log("Testing Token Transfers");
         uint256 ownerBalanceBefore = _token.balanceOf(_owner);
         console.log("Owner balance before transfer:", ownerBalanceBefore);
@@ -129,7 +129,7 @@ contract InflationTokenTest is Test {
         console.log("Owner balance after transfer:", _token.balanceOf(_owner));
     }
 
-    function testRecoverOtherToken() public {
+    function test_recoverOtherToken() public {
         console.log("Testing Recover Other Token");
         _otherToken.mint(address(_token), 100);
         console.log("Transferred 100 OtherToken to contract");
@@ -138,7 +138,7 @@ contract InflationTokenTest is Test {
         assertEq(_otherToken.balanceOf(_owner), 100);
     }
 
-    function testBurnTokens() public {
+    function test_burnTokens() public {
         console.log("Testing Token Burning");
         uint256 initialSupply = _token.totalSupply();
         console.log("Initial total supply:", initialSupply);
@@ -148,14 +148,14 @@ contract InflationTokenTest is Test {
         console.log("Total supply after burning:", _token.totalSupply());
     }
 
-    function testCannotReceiveEth() public {
+    function test_cannotReceiveEth() public {
         vm.expectRevert(bytes("Contract should not accept ETH"));
         (bool success,) = address(_token).call{value: 1 ether}("");
         console.log("ETH transfer success status:", success);
         assertFalse(success, "Contract should not be able to accept ETH");
     }
 
-    function testAccess() public {
+    function test_access() public {
         console.log("Testing access to token attributes and ownership");
         assertEq(_token.name(), "InflationToken", "Token name should be InflationToken");
         assertEq(_token.symbol(), "INFLA", "Token symbol should be INFLA");

@@ -89,7 +89,7 @@ contract BalanceManagerTest is Test {
         console.log("User2 address:", _user2);
     }
 
-    function testAddRemoveAdmin() public {
+    function test_addRemoveAdmin() public {
         address newAdmin = vm.addr(5);
 
         // Add new admin
@@ -103,7 +103,7 @@ contract BalanceManagerTest is Test {
         console.log("Removed new admin:", newAdmin);
     }
 
-    function testRemovedAdminWorks() public {
+    function test_removedAdminWorks() public {
         vm.startPrank(_owner);
 
         // Add user1 as admin
@@ -136,7 +136,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testUserCannotCallAdmin() public {
+    function test_userCannotCallAdmin() public {
         vm.startPrank(_user1);
 
         // Attempt to set balance as a regular user
@@ -157,7 +157,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testSetBalance() public {
+    function test_setBalance() public {
         vm.startPrank(_admin1);
 
         console.log("Initial balance:", _balanceManager.balances(address(_user1), address(_mockTokenA)));
@@ -171,7 +171,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testIncreaseBalance() public {
+    function test_increaseBalance() public {
         vm.startPrank(_admin1);
 
         uint256 initialAmount = 300 * 10 ** 18;
@@ -197,7 +197,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testReduceBalance() public {
+    function test_reduceBalance() public {
         vm.startPrank(_admin1);
 
         uint256 initialAmount = 500 * 10 ** 18;
@@ -223,7 +223,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzSetBalance(uint256 amount) public {
+    function test_fuzzSetBalance(uint256 amount) public {
         vm.assume(amount <= _hundredThousand);
         vm.startPrank(_admin1);
 
@@ -237,7 +237,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzIncreaseBalance(uint256 amount) public {
+    function test_fuzzIncreaseBalance(uint256 amount) public {
         vm.assume(amount <= _hundredThousand);
         vm.startPrank(_admin1);
 
@@ -251,7 +251,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testFuzzReduceBalance(uint256 initialAmount, uint256 reduceAmount) public {
+    function test_fuzzReduceBalance(uint256 initialAmount, uint256 reduceAmount) public {
         vm.assume(initialAmount <= _hundredThousand);
         vm.assume(reduceAmount <= initialAmount);
 
@@ -270,7 +270,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testClaimBalance() public {
+    function test_claimBalance() public {
         vm.startPrank(_admin1);
 
         uint256 amount = 500 * 10 ** 18;
@@ -300,7 +300,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testClaimAllBalances() public {
+    function test_claimAllBalances() public {
         vm.startPrank(_admin1);
 
         _balanceManager.setBalance(_user1, address(_mockTokenA), _fiveHundred); // set token A balance to 500
@@ -347,7 +347,7 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
-    function testWithdrawExcessTokens() public {
+    function test_withdrawExcessTokens() public {
         // Set up initial balances
         vm.startPrank(_admin1);
 
@@ -406,7 +406,7 @@ contract BalanceManagerTest is Test {
         assertEq(finalContractBalance, userBalance, "Contract should still have enough Token A to cover user balance");
     }
 
-    function testWithdrawExcessTokensThenClaim() public {
+    function test_withdrawExcessTokensThenClaim() public {
         // Set up initial balances
         vm.startPrank(_admin1);
 
@@ -477,7 +477,7 @@ contract BalanceManagerTest is Test {
         assertEq(finalContractBalance, 0, "Contract should have zero Token A after user's claim");
     }
 
-    function testAdminFundsUserClaims() public {
+    function test_adminFundsUserClaims() public {
         // Log initial user balance
         uint256 initialUser1Balance = _mockTokenA.balanceOf(_user1);
         console.log("Initial User1 Token A balance:", initialUser1Balance);
@@ -514,18 +514,18 @@ contract BalanceManagerTest is Test {
     }
 
     // attempt to set balance for contract address
-    function testCannotAddContractBalance() public {
+    function test_cannotAddContractBalance() public {
         vm.startPrank(_admin1);
 
         address contractAddress = address(_balanceManager);
-        vm.expectRevert("Contract cannot be the user");
+        vm.expectRevert(BalanceManager.ContractCannotBeTheUser.selector);
         _balanceManager.setBalance(contractAddress, address(_mockTokenA), _fiveHundred);
 
         vm.stopPrank();
     }
 
     // assert contract cannot receive ETH
-    function testCannotReceiveEth() public {
+    function test_cannotReceiveEth() public {
         vm.expectRevert(bytes("Contract should not accept ETH"));
         (bool success,) = address(_balanceManager).call{value: 1 ether}("");
         console.log("ETH transfer success status:", success);
