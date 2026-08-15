@@ -28,11 +28,22 @@ jobs:
         with:
           cache-artifacts: "false"
 
+      # `skip` in [profile.default] hides examples/ from fmt and lint, and the
+      # examples profile hides src/. Neither tree is covered by one invocation,
+      # so both run when examples/ is present. Detect at runtime rather than
+      # stripping with variant markers: GITHUB_TOKEN cannot push workflow files
+      # whose contents do not already exist on another branch.
       - name: Check formatting
         run: |
+          set -euo pipefail
           echo "Running forge fmt --check"
-          if ! forge fmt --check; then
-            echo "The formatting check failed. You can fix it locally with 'forge fmt' and then push, or you can have a GitHub action take care of it for you by commenting '!fix' on the PR."
+          failed=0
+          forge fmt --check || failed=1
+          if [ -d examples ]; then
+            FOUNDRY_PROFILE=examples forge fmt --check || failed=1
+          fi
+          if [ "$failed" -ne 0 ]; then
+            echo "The formatting check failed. You can fix it locally with 'just fmt' and then push, or you can have a GitHub action take care of it for you by commenting '!fix' on the PR."
             exit 1
           fi
 
@@ -41,6 +52,9 @@ jobs:
         run: |
           set -euo pipefail
           forge lint --severity high --severity med 2>&1 | tee lint.log
+          if [ -d examples ]; then
+            FOUNDRY_PROFILE=examples forge lint --severity high --severity med 2>&1 | tee -a lint.log
+          fi
           if grep -qE '^(warning|error)\[' lint.log; then
             echo "forge lint reported findings above. Fix them, or add a"
             echo "'// forge-lint: disable-next-line(<id>)' comment with a justification."

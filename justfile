@@ -11,6 +11,7 @@ build *args:
 test *args:
     forge test {{args}}
 
+
 # Format Solidity
 fmt *args:
     forge fmt {{args}}
@@ -18,10 +19,6 @@ fmt *args:
 # Lint Solidity
 lint *args:
     forge lint {{args}}
-
-# Write gas snapshots
-snapshot *args:
-    forge snapshot {{args}}
 
 # Coverage summary + HTML report (needs `lcov`: `brew install lcov`)
 cov:

@@ -60,7 +60,7 @@ There are two mechanisms. Prefer the first.
 
 **1. Remove a path** — add it to `remove:` in `variants/<variant>.yml`. This covers whole files and directories.
 
-Structure the repo so this is usually enough. Deploy scripts are one per contract — `DeployBalanceManager.s.sol`, `DeployInflationToken.s.sol` — precisely so that a variant which drops a contract just drops its script. A single `Deploy.s.sol` naming one contract would need special handling in every variant that lacks it.
+Structure the repo so this is usually enough. Demo contracts live under `examples/` (with matching `test/examples/` and `script/examples/`), so `minimal` drops those three directories in one go. User-facing starter code stays in `src/` / `test/` / `script/`.
 
 **2. Remove part of a shared file** — wrap the lines in a marker region. This is how `minimal` drops the Uniswap dependencies while `foundry.toml` stays a single file on `main`:
 
@@ -71,6 +71,15 @@ Structure the repo so this is usually enough. Deploy scripts are one per contrac
 ```
 
 The name list is comma separated (`# variant:full,defi:start` keeps the region for both), and the marker lines are always stripped from generated output. Both `#` and `//` prefixes work, so this covers Solidity as well as TOML. A marker has to be alone on its line, so mentioning one in prose does nothing.
+
+Do **not** put marker regions in `.github/workflows/` files. Variant stripping
+would produce workflow contents that do not already exist on another branch, and
+`GITHUB_TOKEN` cannot push those (GitHub requires the `workflow` scope for unique
+workflow content). Keep shared workflows identical on every branch. Put examples-only
+jobs in their own workflow and add that path to the variant's `remove:` list (see
+`.github/workflows/examples.yml`). Inside a shared `run:` script, `[ -d examples ]`
+is fine — that is shell, not a job-level expression (`hashFiles` is not available in
+`jobs.<id>.if`).
 
 Markdown uses an HTML comment instead, so the marker does not render:
 
