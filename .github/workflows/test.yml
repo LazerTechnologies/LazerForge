@@ -1,0 +1,48 @@
+name: Forge Tests
+
+on:
+  push:
+    branches: [main]
+    tags: ["*"]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+# matches the [profile.ci] section in foundry.toml (profile names are case-sensitive)
+env:
+  FOUNDRY_PROFILE: ci
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+
+    name: Forge Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          # pinned rather than `nightly` so CI matches the reproducible-build claim
+          version: v1.7.1
+
+      # dependencies are declared in foundry.toml and locked in soldeer.lock, not
+      # vendored, so they have to be fetched before anything can compile
+      - name: Install dependencies
+        run: forge soldeer install
+
+      - name: Run Forge build
+        id: build
+        run: |
+          forge --version
+          forge build --sizes
+        # don't fail on oversized contracts; tests below still catch build errors
+        continue-on-error: true
+
+      - name: Run Forge tests
+        id: test
+        run: forge test -vvv

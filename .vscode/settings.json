@@ -1,0 +1,7 @@
+{
+  "solidity.formatter": "forge",
+  "solidity.defaultCompiler": "localFile",
+  "solidity.monoRepoSupport": true,
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "solidity.packageDefaultDependenciesContractsDirectory": "src"
+}

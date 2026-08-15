@@ -1,0 +1,79 @@
+name: Autofix Linting
+
+on:
+  issue_comment:
+    types: [created]
+
+# Down scope as necessary via https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  run-linters:
+    name: Run linters
+    # Only run on PR comments that are exactly `!fix`, and only when the commenter
+    # can already write to the repo. Without the association check, any user could
+    # trigger a job that holds a `contents: write` token.
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.body == '!fix' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get PR branch
+        id: get-branch
+        run: |
+          gh pr view "$PR_NO" --repo "$REPO" \
+            --json headRefName,isCrossRepository \
+            --jq '"branch=\(.headRefName)\nis_fork=\(.isCrossRepository)"' >> "$GITHUB_OUTPUT"
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # GITHUB_TOKEN cannot push to a fork, so say so instead of failing at `git push`
+      - name: Skip forks
+        if: steps.get-branch.outputs.is_fork == 'true'
+        run: echo "::notice::This PR is from a fork; run 'forge fmt' locally and push instead."
+
+      - name: Check out Git repository
+        if: steps.get-branch.outputs.is_fork != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-branch.outputs.branch }}
+
+      - name: Install Foundry
+        if: steps.get-branch.outputs.is_fork != 'true'
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.7.1
+
+      - name: Lint
+        id: update
+        if: steps.get-branch.outputs.is_fork != 'true'
+        run: |
+          set -euo pipefail
+
+          forge fmt
+
+          if git diff --quiet; then
+            echo "::notice::Formatting is already correct, nothing to fix."
+            exit 0
+          fi
+
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git commit -am "Github Actions automatically updated formatting with forge fmt"
+          COMMIT_HASH=$(git rev-parse HEAD)
+
+          # `printf` so the newline is interpreted; `echo "\n"` writes a literal \n
+          printf '# Github Actions automatically updated formatting with forge fmt\n%s\n' \
+            "$COMMIT_HASH" >> .git-blame-ignore-revs
+          git commit -am "Updated .git-blame-ignore-revs with commit $COMMIT_HASH"
+
+          git push origin "HEAD:${BRANCH}"
+        env:
+          BRANCH: ${{ steps.get-branch.outputs.branch }}
