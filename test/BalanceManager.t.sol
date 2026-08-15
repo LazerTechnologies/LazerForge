@@ -136,6 +136,20 @@ contract BalanceManagerTest is Test {
         vm.stopPrank();
     }
 
+    function test_constructorSetsInitialOwner() public {
+        // the constructor argument used to be ignored, leaving the deployer as
+        // owner no matter what was passed
+        address customOwner = vm.addr(99);
+        BalanceManager manager = new BalanceManager(customOwner);
+        assertEq(manager.owner(), customOwner, "Owner should be the address passed to the constructor");
+        assertTrue(manager.owner() != address(this), "Deployer should not be the owner");
+    }
+
+    function test_constructorRejectsZeroOwner() public {
+        vm.expectRevert();
+        new BalanceManager(address(0));
+    }
+
     function test_userCannotCallAdmin() public {
         vm.startPrank(_user1);
 

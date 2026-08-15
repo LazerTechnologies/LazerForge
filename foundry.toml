@@ -16,14 +16,14 @@ auto_detect_remappings = false
 # version. Bump them alongside the matching entry in [dependencies] below.
 remappings = [
     'forge-std/=dependencies/forge-std-1.16.2/src/',
-    'solady/=dependencies/solady-0.0.107/src/',
-    # the published @openzeppelin-contracts package is flattened - the contracts sit
-    # at the package root, not under a contracts/ subdirectory like the git repo
+    'solady/=dependencies/solady-0.1.26/src/',
+    # The published @openzeppelin-contracts package is flattened - the contracts sit
+    # at the package root, not under a contracts/ subdirectory like the git repo.
     # `@openzeppelin/contracts/` is the canonical upstream spelling and what this
     # repo's own imports use. The bare `openzeppelin/contracts/` alias is kept as a
     # convenience for template users and is not used by any code here.
-    '@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
-    'openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
+    '@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.7.0/',
+    'openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.7.0/',
     # The Uniswap aliases resolve to the package root, not to contracts/ or src/.
     # These packages import each other by their full published path (v3-periphery
     # does `import '@uniswap/v3-core/contracts/...'`), so mapping the alias any
@@ -144,8 +144,8 @@ remappings_generate = false
 # Exact versions and content hashes are recorded in soldeer.lock.
 [dependencies]
 forge-std = "1.16.2"
-solady = "0.0.107"
-"@openzeppelin-contracts" = "4.9.2"
+solady = "0.1.26"
+"@openzeppelin-contracts" = "5.7.0"
 "@uniswap-v2-core" = "1.0.1"
 "@uniswap-v3-core" = "1.0.1"
 "@uniswap-v3-periphery" = "1.4.4"

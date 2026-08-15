@@ -1,9 +1,9 @@
 [[dependencies]]
 name = "@openzeppelin-contracts"
-version = "4.9.2"
-url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/4_9_2_22-01-2024_13:13:52_contracts.zip"
-checksum = "0f4450671798ea5659e6391876a3cf443ca50a696d9b556ac622ec7660bce306"
-integrity = "f69bd90f264280204b2a1172a02a2d20f3611f5993a61e5215647bec696a8420"
+version = "5.7.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_7_0_29-07-2026_19:34:46_contracts.zip"
+checksum = "fe08a24bc34334b2976c6ad69a0d74bdfa63de8a5c8528579060f25a11fb5cd5"
+integrity = "3e13bc4d96bdef6e35f6b1e0dc0e455843a958edc597750dff20ca50295b767d"
 
 [[dependencies]]
 name = "@uniswap-v2-core"
@@ -53,7 +53,7 @@ rev = "cc306b601f172c51bc04334a109e98340456620b"
 
 [[dependencies]]
 name = "solady"
-version = "0.0.107"
-url = "https://soldeer-revisions.s3.amazonaws.com/solady/0_0_107_22-01-2024_13:27:46_solady.zip"
-checksum = "6883ca13f637c7b4c89147dcd156bf95a07e5c2d50aa80f2a1e5f2039ddfa6cf"
-integrity = "301933cbb5a7193a011074820c64d79521f0087112f51425f98055eaf6fa6968"
+version = "0.1.26"
+url = "https://soldeer-revisions.s3.amazonaws.com/solady/0_1_26_25-08-2025_15:30:06_solady.zip"
+checksum = "9872ac7cfd32c1eba32800508a1325c49f4a4aa8c6f670454db91971a583e26b"
+integrity = "5da4b5ca9cbad98812a4b75ad528ff34c72a0b84433204be6d1420c81de1d6ff"
