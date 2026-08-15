@@ -29,3 +29,11 @@ cov:
     set -euo pipefail
     FOUNDRY_PROFILE=coverage forge coverage --report summary --report lcov
     genhtml lcov.info -o coverage --branch
+
+# variant:full:start
+
+# Regenerate a variant branch into .variant-build/ without pushing (maintainers)
+variant name *args:
+    tools/build-variant.sh {{name}} {{args}}
+
+# variant:full:end

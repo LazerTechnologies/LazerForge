@@ -41,7 +41,7 @@ This means variant branches are finally tested, and cannot drift from `main`.
 ### Building a variant locally
 
 ```bash
-tools/build-variant.sh minimal
+just variant minimal        # or: tools/build-variant.sh minimal
 ```
 
 That writes a git worktree to `.variant-build/minimal/` and stops without pushing, so you can inspect the result:
