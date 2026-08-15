@@ -6,6 +6,8 @@ contract Utils {
         payload = new bytes(length);
 
         for (uint256 i; i < payload.length; ++i) {
+            // casting to 'uint8' is safe because `i % 256` is always in [0, 255]
+            // forge-lint: disable-next-line(unsafe-typecast)
             payload[i] = bytes1(uint8(i % 256));
         }
     }
@@ -21,6 +23,8 @@ contract Utils {
         message = new bytes(length);
 
         for (uint256 i; i < length; ++i) {
+            // casting to 'uint8' is safe because `i % 256` is always in [0, 255]
+            // forge-lint: disable-next-line(unsafe-typecast)
             message[i] = bytes1(uint8(i % 256));
         }
     }

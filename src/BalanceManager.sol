@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {IERC20} from "openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable} from "openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "openzeppelin/contracts/security/ReentrancyGuard.sol";
 
@@ -12,6 +13,10 @@ import {ReentrancyGuard} from "openzeppelin/contracts/security/ReentrancyGuard.s
  * @notice Users can claim their balance of any token at any time.
  */
 contract BalanceManager is Ownable, ReentrancyGuard {
+    // tokens like USDT do not return a bool from transfer/transferFrom, and others
+    // return false instead of reverting. SafeERC20 handles both.
+    using SafeERC20 for IERC20;
+
     mapping(address => bool) public admins;
     mapping(address => mapping(address => uint256)) public balances;
     mapping(address => uint256) public totalBalances;
@@ -123,7 +128,7 @@ contract BalanceManager is Ownable, ReentrancyGuard {
         if (totalBalances[token] == 0) {
             allTokens.push(token);
         }
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         emit Funded(token, amount);
     }
 
@@ -139,7 +144,7 @@ contract BalanceManager is Ownable, ReentrancyGuard {
         balances[msg.sender][token] = 0;
         totalBalances[token] -= balance;
         emit BalanceClaimed(msg.sender, token, balance);
-        IERC20(token).transfer(msg.sender, balance);
+        IERC20(token).safeTransfer(msg.sender, balance);
     }
 
     /**
@@ -156,7 +161,7 @@ contract BalanceManager is Ownable, ReentrancyGuard {
                 balances[msg.sender][token] = 0;
                 totalBalances[token] -= balance;
                 emit BalanceClaimed(msg.sender, token, balance);
-                IERC20(token).transfer(msg.sender, balance);
+                IERC20(token).safeTransfer(msg.sender, balance);
             }
         }
     }
@@ -175,7 +180,7 @@ contract BalanceManager is Ownable, ReentrancyGuard {
         uint256 availableAmount = IERC20(token).balanceOf(address(this)) - totalBalances[token];
         require(amount <= availableAmount, "Insufficient excess token balance");
 
-        IERC20(token).transfer(to, amount);
+        IERC20(token).safeTransfer(to, amount);
         emit TokensWithdrawn(token, amount, to);
     }
 

@@ -44,6 +44,9 @@ contract InflationToken is ERC20, ERC20Burnable, Ownable {
      * @param to The address of the target account
      */
     function mint(address to) external onlyOwner {
+        // `block.timestamp` is safe here because the gate is a 365 day window; the
+        // seconds of drift a validator can introduce cannot meaningfully move it
+        // forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp < mintingAllowedAfter) {
             revert MintingDateNotReached();
         }
