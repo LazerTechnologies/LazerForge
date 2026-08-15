@@ -68,6 +68,19 @@ out = 'via_ir-out'
 [profile.ci.fuzz]
 runs = 1024
 
+# forge coverage instruments source maps. The default optimizer_runs (9_999_999)
+# mangles those maps and produces empty or misleading reports, so this profile
+# turns the optimizer off. `just cov` and the CI coverage job set
+# FOUNDRY_PROFILE=coverage for you.
+[profile.coverage]
+optimizer = false
+via_ir = false
+
+# Coverage cares about hitting lines, not about fuzz depth. Keep this small so
+# `forge coverage` stays fast locally and in CI.
+[profile.coverage.fuzz]
+runs = 16
+
 [profile.ffi]
 ffi = true
 test = 'test-ffi'
@@ -83,11 +96,6 @@ runs = 5
 optimizer = true
 optimizer_runs = 1000000
 via_ir = true
-
-# Coverage instrumentation fights the default 9_999_999 optimizer runs and can
-# hit "stack too deep". `just cov` sets FOUNDRY_PROFILE=coverage to use this.
-[profile.coverage]
-optimizer = false
 
 # Local anvil profile - faster compiles for the local iterate/deploy loop
 [profile.anvil]
