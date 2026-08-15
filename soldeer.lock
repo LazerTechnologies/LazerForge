@@ -1,0 +1,59 @@
+[[dependencies]]
+name = "@openzeppelin-contracts"
+version = "5.7.0"
+url = "https://soldeer-revisions.s3.amazonaws.com/@openzeppelin-contracts/5_7_0_29-07-2026_19:34:46_contracts.zip"
+checksum = "fe08a24bc34334b2976c6ad69a0d74bdfa63de8a5c8528579060f25a11fb5cd5"
+integrity = "3e13bc4d96bdef6e35f6b1e0dc0e455843a958edc597750dff20ca50295b767d"
+
+[[dependencies]]
+name = "@uniswap-v2-core"
+version = "1.0.1"
+url = "https://soldeer-revisions.s3.amazonaws.com/@uniswap-v2-core/1_0_1_22-01-2024_13:18:30_v2-core.zip"
+checksum = "efebb89237048771c19f52d3ce87ec4d0c591279bf1977c49f9e70e5fff530f0"
+integrity = "fda4e18a2a0c21eeddd8b6af36439f394e4ff74eb75705409a87b8952c9e2972"
+
+[[dependencies]]
+name = "@uniswap-v3-core"
+version = "1.0.1"
+url = "https://soldeer-revisions.s3.amazonaws.com/@uniswap-v3-core/1_0_1_22-01-2024_13:19:53_v3-core.zip"
+checksum = "96ad846c29246d5b9844c72239f5b722e6cd16378930c10d4461d98656d506a7"
+integrity = "fc895fca9ed19a0f2e445545d4569b2cbb2fd1c70ec25c64ed83ec252f88aa24"
+
+[[dependencies]]
+name = "@uniswap-v3-periphery"
+version = "1.4.4"
+url = "https://soldeer-revisions.s3.amazonaws.com/@uniswap-v3-periphery/1_4_4_22-01-2024_13:20:51_v3-periphery.zip"
+checksum = "f1ce151585a084bb3ec6fb9cbce4520924d41398c3ce8979169de6f7f70d6a81"
+integrity = "e101a06117b3274cd21a3032fa9a55446e842dc0e0e1b0b25008e094a446c453"
+
+[[dependencies]]
+name = "@uniswap-v4-core"
+version = "1.0.1"
+git = "https://github.com/Uniswap/v4-core.git"
+rev = "80311e34080fee64b6fc6c916e9a51a437d0e482"
+
+[[dependencies]]
+name = "@uniswap-v4-periphery"
+version = "1.0.1"
+git = "https://github.com/Uniswap/v4-periphery.git"
+rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d"
+
+[[dependencies]]
+name = "forge-std"
+version = "1.16.2"
+url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_16_2_03-07-2026_07:37:45_forge-std-1.16.zip"
+checksum = "405dccc9d60d753f6abc412b4adf0359f4390f65dbadbbb277a12b4946ed8969"
+integrity = "5fb4325b60d7d4194bd0481e2f94398cf1d9c6561dd12a66fb2748ef4a68205f"
+
+[[dependencies]]
+name = "permit2"
+version = "1.0.0"
+git = "https://github.com/Uniswap/permit2.git"
+rev = "cc306b601f172c51bc04334a109e98340456620b"
+
+[[dependencies]]
+name = "solady"
+version = "0.1.26"
+url = "https://soldeer-revisions.s3.amazonaws.com/solady/0_1_26_25-08-2025_15:30:06_solady.zip"
+checksum = "9872ac7cfd32c1eba32800508a1325c49f4a4aa8c6f670454db91971a583e26b"
+integrity = "5da4b5ca9cbad98812a4b75ad528ff34c72a0b84433204be6d1420c81de1d6ff"

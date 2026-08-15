@@ -22,14 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           # pinned rather than `nightly` so CI matches the reproducible-build claim
           version: v1.7.1
+
+      # `forge lint` parses imports, so the dependencies have to be present
+      - name: Install dependencies
+        run: forge soldeer install
 
       - name: Check formatting
         run: |

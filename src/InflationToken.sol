@@ -33,7 +33,7 @@ contract InflationToken is ERC20, ERC20Burnable, Ownable {
     event TokensRecovered(address indexed token, address indexed recipient, uint256 amount);
     event TokensMinted(address indexed recipient, uint256 amount);
 
-    constructor() ERC20(TOKEN_NAME, TOKEN_SYMBOL) Ownable() {
+    constructor() ERC20(TOKEN_NAME, TOKEN_SYMBOL) Ownable(msg.sender) {
         _mint(msg.sender, TOKEN_INITIAL_SUPPLY * 10 ** decimals());
         mintingAllowedAfter = block.timestamp + MINIMUM_TIME_BETWEEN_MINTS;
     }

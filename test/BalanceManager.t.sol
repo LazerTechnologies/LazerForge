@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/BalanceManager.sol";
-import {ERC20} from "openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
  * @title MockERC20
@@ -134,6 +134,20 @@ contract BalanceManagerTest is Test {
         console.log("User1 attempted to set balance for User2 and failed as expected after being removed as admin");
 
         vm.stopPrank();
+    }
+
+    function test_constructorSetsInitialOwner() public {
+        // the constructor argument used to be ignored, leaving the deployer as
+        // owner no matter what was passed
+        address customOwner = vm.addr(99);
+        BalanceManager manager = new BalanceManager(customOwner);
+        assertEq(manager.owner(), customOwner, "Owner should be the address passed to the constructor");
+        assertTrue(manager.owner() != address(this), "Deployer should not be the owner");
+    }
+
+    function test_constructorRejectsZeroOwner() public {
+        vm.expectRevert();
+        new BalanceManager(address(0));
     }
 
     function test_userCannotCallAdmin() public {
