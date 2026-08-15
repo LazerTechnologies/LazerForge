@@ -13,6 +13,7 @@ LazerForge is a batteries included template with the following configurations:
 - `forge fmt` configured as the default formatter for VSCode projects
 - Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
+- A `justfile` with the common Foundry recipes (`just --list`)
 - A pre-configured, but still minimal `foundry.toml`
   - multiple profiles for various development and testing scenarios (see [LazerForge Profiles](lazerTutorial/profiles.md))
   - high optimizer settings by default for gas-efficient smart contracts
@@ -99,29 +100,20 @@ import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Po
 import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 ```
 
-## Gas Snapshots
+## Commands
 
-Forge can generate gas snapshots for all test functions to see how much gas contracts will consume, or to compare gas usage before and after optimizations.
-
-```shell
-forge snapshot
-```
-
-## Coverage Reports
-
-If you plan on generating coverage reports, you'll need to install [`lcov`](https://github.com/linux-test-project/lcov) as well.
-
-On macOS, you can do this with the following command:
+Common tasks live in the `justfile`. [Install just](https://github.com/casey/just#installation), then run `just` (or `just --list`) to see them:
 
 ```bash
-brew install lcov
+just build       # forge build
+just test        # forge test
+just fmt         # forge fmt
+just lint        # forge lint
+just snapshot    # forge snapshot
+just cov         # coverage summary + HTML report
 ```
 
-To generate reports, run
-
-```bash
-./coverage-report
-```
+Recipes accept extra flags (`just test --match-test test_Deposit`). `just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep".
 
 ## Documentation
 

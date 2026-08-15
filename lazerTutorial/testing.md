@@ -32,23 +32,25 @@ Forge can generate gas snapshots for all test functions to see how much gas cont
 
 ```shell
 forge snapshot
+# or
+just snapshot
 ```
 
 ## Coverage Reports
 
-If you plan on generating coverage reports, you'll need to install [`lcov`](https://github.com/linux-test-project/lcov) as well.
-
-On macOS, you can do this with the following command:
+Coverage reports need [`just`](https://github.com/casey/just#installation) and [`lcov`](https://github.com/linux-test-project/lcov). On macOS:
 
 ```bash
-brew install lcov
+brew install just lcov
 ```
 
-To generate reports, run
+Then run:
 
 ```bash
-./coverage-report
+just cov
 ```
+
+That uses `[profile.coverage]` in `foundry.toml` (optimizer off) so instrumentation does not hit "stack too deep" against the template's high `optimizer_runs`. It writes a summary, `lcov.info`, and an HTML report under `coverage/`.
 
 ## Writing Tests
 

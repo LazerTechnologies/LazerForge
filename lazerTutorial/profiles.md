@@ -65,6 +65,16 @@ Use this profile when:
 - need to use the via-IR pipeline
 - dealing with large contract sizes
 
+### Coverage Profile
+
+```bash
+FOUNDRY_PROFILE=coverage forge coverage
+# or
+just cov
+```
+
+Coverage instrumentation with the default 9_999_999 optimizer runs can hit "stack too deep". This profile turns the optimizer off. `just cov` selects it automatically and also writes the HTML report.
+
 ### FFI Profile
 
 ```bash

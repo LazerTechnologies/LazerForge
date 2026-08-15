@@ -1,3 +1,0 @@
-# "Forge coverage" - Generate a coverage summary report as well as an lcov.info, and generate an HTML report from the lcov.info
-# Requires the lcov package to be installed
-forge coverage --report summary --report lcov && genhtml lcov.info -o coverage --branch
