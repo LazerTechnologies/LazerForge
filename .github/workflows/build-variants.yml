@@ -65,6 +65,12 @@ jobs:
           # pinned rather than `nightly` so CI matches the reproducible-build claim
           version: v1.7.1
 
+      # the build commits the generated tree, which needs an author
+      - name: Configure git identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
       - name: Generate variant
         run: tools/build-variant.sh "${{ matrix.variant }}" --ref "${{ github.sha }}"
 

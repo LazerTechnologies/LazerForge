@@ -290,6 +290,12 @@ done
 readonly MANIFEST="$REPO_ROOT/variants/$VARIANT.yml"
 [ -f "$MANIFEST" ] || die "no manifest at variants/$VARIANT.yml"
 
+# the build ends in a commit, so fail early with something more useful than
+# git's "empty ident name" if there is no identity to commit as
+if [ -z "$(git -C "$REPO_ROOT" config user.email || true)" ]; then
+    die "no git identity configured - set user.name and user.email before building a variant"
+fi
+
 if [ -z "$REF" ]; then
     if git -C "$REPO_ROOT" rev-parse --verify --quiet origin/main >/dev/null; then
         REF="origin/main"
