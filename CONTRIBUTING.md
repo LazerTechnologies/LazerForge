@@ -115,6 +115,19 @@ If you push to one anyway, it will not stick: every build replaces the whole tre
 
 > **Maintainers:** importable rulesets live in [`.github/rulesets/`](.github/rulesets/), with notes on what each one does and why the variant branches are not update-restricted.
 
+## Development worktrees
+
+When you need a second checkout for parallel branch work, keep it inside the repo:
+
+```bash
+just worktree ci/caching-coverage-snapshot
+# or: tools/worktree.sh add ci/caching-coverage-snapshot
+```
+
+That creates `.worktrees/ci-caching-coverage-snapshot/`. List or remove with `just worktrees` and `just worktree-rm <branch>`.
+
+Do not create sibling directories next to the repo (for example `../LazerForge-issue-33`).
+
 ## Questions or Clarifications
 
 If you have any questions about the branch structure or contribution process, please open an issue in the repository.

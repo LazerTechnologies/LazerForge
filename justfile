@@ -36,4 +36,16 @@ cov:
 variant name *args:
     tools/build-variant.sh {{name}} {{args}}
 
+# Add a development worktree under .worktrees/
+worktree branch *args:
+    tools/worktree.sh add {{branch}} {{args}}
+
+# List all worktrees
+worktrees:
+    tools/worktree.sh list
+
+# Remove a development worktree under .worktrees/
+worktree-rm branch:
+    tools/worktree.sh remove {{branch}}
+
 # variant:full:end
