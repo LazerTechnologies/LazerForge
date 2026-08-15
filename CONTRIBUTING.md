@@ -75,9 +75,11 @@ The name list is comma separated (`# variant:full,defi:start` keeps the region f
 Do **not** put marker regions in `.github/workflows/` files. Variant stripping
 would produce workflow contents that do not already exist on another branch, and
 `GITHUB_TOKEN` cannot push those (GitHub requires the `workflow` scope for unique
-workflow content). Keep shared workflows identical on every branch and gate
-examples-only steps with runtime checks instead (`[ -d examples ]` or
-`hashFiles('examples/**/*.sol') != ''`).
+workflow content). Keep shared workflows identical on every branch. Put examples-only
+jobs in their own workflow and add that path to the variant's `remove:` list (see
+`.github/workflows/examples.yml`). Inside a shared `run:` script, `[ -d examples ]`
+is fine — that is shell, not a job-level expression (`hashFiles` is not available in
+`jobs.<id>.if`).
 
 Markdown uses an HTML comment instead, so the marker does not render:
 

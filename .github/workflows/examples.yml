@@ -1,0 +1,55 @@
+name: Forge Examples
+
+# Demo contracts under examples/. Kept as its own workflow so variant/minimal can
+# drop the file entirely (see variants/minimal.yml) without stripping markers
+# out of test.yml — GITHUB_TOKEN cannot push unique workflow content.
+
+on:
+  push:
+    branches: [main]
+    tags: ["*"]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    name: Examples
+    runs-on: ubuntu-latest
+    env:
+      FOUNDRY_PROFILE: examples
+      # A job-level profile replaces `ci`, so [profile.ci.fuzz] no longer applies
+      # here - and the repo's only fuzz tests are in examples/. Set the campaign
+      # size directly so CI keeps running it at full depth.
+      FOUNDRY_FUZZ_RUNS: 1024
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-foundry
+
+      # the contracts big enough to approach the 24KB limit all live here, so
+      # this is where the size check earns its keep
+      - name: Build examples
+        run: forge build --sizes
+
+      - name: Test examples
+        run: forge test -vvv
+
+  gas:
+    name: Gas snapshot
+    runs-on: ubuntu-latest
+    env:
+      # Snapshot the example contracts — Counter gas is not interesting.
+      FOUNDRY_PROFILE: examples
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-foundry
+
+      # Fuzz and invariant tests are excluded: their gas depends on random
+      # inputs, so they cannot gate PRs. Update the committed snapshot with
+      # the same filter after a gas-affecting change.
+      - name: Check gas snapshot
+        run: forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
