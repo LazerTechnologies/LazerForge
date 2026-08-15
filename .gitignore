@@ -10,6 +10,9 @@ via_ir-out/
 # Worktrees produced by tools/build-variant.sh
 /.variant-build/
 
+# Development worktrees created with tools/worktree.sh
+/.worktrees/
+
 # Ignores development broadcast logs
 broadcast/*
 !/broadcast

@@ -30,3 +30,4 @@ cov:
     FOUNDRY_PROFILE=coverage forge coverage --report summary --report lcov
     genhtml lcov.info -o coverage --branch
 
+
