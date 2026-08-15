@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
 
-    name: Foundry project
+    name: Forge Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

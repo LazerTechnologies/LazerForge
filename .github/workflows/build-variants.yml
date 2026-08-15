@@ -116,3 +116,17 @@ jobs:
 
           echo "Publishing to origin/$branch"
           git push origin "HEAD:refs/heads/$branch"
+
+  # A single stable check to require on `main`. The build job's name is the
+  # variant, so requiring it directly would mean editing branch protection every
+  # time a starter is added - exactly the devops cost this change exists to remove.
+  variants:
+    name: Variants
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check variant builds
+        run: |
+          echo "build result: ${{ needs.build.result }}"
+          [ "${{ needs.build.result }}" = "success" ]
