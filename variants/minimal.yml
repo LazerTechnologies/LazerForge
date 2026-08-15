@@ -1,0 +1,34 @@
+# Variant manifest for the `minimal` branch.
+#
+# `minimal` is generated from `main` by tools/build-variant.sh - never edited by
+# hand. See CONTRIBUTING.md for the workflow.
+#
+# Supported keys:
+#   description  one line, used in the generated commit message
+#   branch       the branch this variant is published to
+#   remove       paths deleted from the tree (a trailing / means a directory)
+#
+# Content that differs between variants rather than simply being absent is
+# handled two other ways:
+#   - marker regions in shared files, e.g. `# variant:full:start` in foundry.toml
+#   - overlay files under variants/minimal/files/, copied over the tree last
+
+description: Lightweight template without tutorials, example contracts, or Uniswap dependencies
+branch: minimal
+
+remove:
+  # tutorials are the bulk of what `minimal` exists to leave out
+  - lazerTutorial/
+
+  # example contracts and their tests. InflationToken stays as the one worked
+  # example; BalanceManager and Rescue are the "extensive examples" minimal drops
+  - src/BalanceManager.sol
+  - src/utils/Rescue.sol
+  - test/BalanceManager.t.sol
+  - script/CrossChainDeploy.s.sol
+
+  # the variant machinery itself. Generated branches must not carry the tooling
+  # that generates them, or a contributor could try to build variants from one
+  - variants/
+  - tools/
+  - .github/workflows/build-variants.yml

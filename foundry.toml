@@ -24,6 +24,7 @@ remappings = [
     # convenience for template users and is not used by any code here.
     '@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.7.0/',
     'openzeppelin/contracts/=dependencies/@openzeppelin-contracts-5.7.0/',
+    # variant:full:start
     # The Uniswap aliases resolve to the package root, not to contracts/ or src/.
     # These packages import each other by their full published path (v3-periphery
     # does `import '@uniswap/v3-core/contracts/...'`), so mapping the alias any
@@ -38,7 +39,8 @@ remappings = [
     '@uniswap/v4-periphery/=dependencies/@uniswap-v4-periphery-1.0.1/',
     # v4-periphery imports Permit2 by this alias, so it has to resolve for anything
     # under @uniswap/v4-periphery/ to compile
-    'permit2/=dependencies/permit2-1.0.0/'
+    'permit2/=dependencies/permit2-1.0.0/',
+    # variant:full:end
 ]
 # ensure that block number + timestamp are realistic when running tests
 block_number = 17722462
@@ -151,6 +153,7 @@ remappings_generate = false
 forge-std = "1.16.2"
 solady = "0.1.26"
 "@openzeppelin-contracts" = "5.7.0"
+# variant:full:start
 "@uniswap-v2-core" = "1.0.1"
 "@uniswap-v3-core" = "1.0.1"
 "@uniswap-v3-periphery" = "1.4.4"
@@ -166,3 +169,4 @@ solady = "0.1.26"
 # commit tagged with the canonical deployment address
 # 0x000000000022D473030F116dDEE9F6B43aC78BA3.
 permit2 = { version = "1.0.0", git = "https://github.com/Uniswap/permit2.git", rev = "cc306b601f172c51bc04334a109e98340456620b" }
+# variant:full:end
