@@ -6,51 +6,64 @@ on:
       - main
       - minimal
 
+permissions:
+  contents: read
+
 jobs:
   consistency-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all branches and history
+          fetch-depth: 0 # need full history to read both branches
 
-      # Check consistency of critical files
-      - name: Compare Critical Files
+      # `actions/checkout` only creates a local branch for the ref it checked out.
+      # `main` and `minimal` are reachable as remote-tracking refs, so they have to
+      # be referenced as `origin/<branch>` - `git show main:<file>` fails here.
+      - name: Fetch branches
+        run: git fetch --no-tags origin main minimal
+
+      - name: Report drift in shared files
+        env:
+          # Files that exist on both branches and are expected to stay aligned.
+          # `foundry.toml` is intentionally excluded from the shared set: `minimal`
+          # deliberately omits the Uniswap remappings, so it can never match byte
+          # for byte. It is diffed below for visibility only.
+          SHARED_FILES: .gitignore LICENSE sample.env
         run: |
-          # Ensure both branches exist
-          git branch -r
+          set -euo pipefail
 
-          # List of files to compare
-          critical_files=(
-            "foundry.toml"
-            ".gitignore"
-            "LICENSE"
-            "sample.env"
-          )
+          drift=0
+          {
+            echo "## Branch drift: \`main\` vs \`minimal\`"
+            echo
 
-          # Function to compare files
-          compare_files() {
-            local file="$1"
-            echo "Comparing $file"
-            
-            # Get file contents from both branches
-            main_content=$(git show main:"$file" 2>/dev/null || echo "")
-            minimal_content=$(git show minimal:"$file" 2>/dev/null || echo "")
+            for file in $SHARED_FILES; do
+              if diff_out=$(git diff --no-color "origin/main:$file" "origin/minimal:$file" 2>&1); then
+                echo "- ✅ \`$file\` is identical"
+              else
+                drift=1
+                echo "- ⚠️ \`$file\` differs"
+                echo
+                echo '```diff'
+                echo "$diff_out"
+                echo '```'
+              fi
+            done
 
-            # Compare contents
-            if [ "$main_content" != "$minimal_content" ]; then
-              echo "Inconsistency detected in $file"
-              echo "Main branch content:"
-              echo "$main_content"
-              echo "Minimal branch content:"
-              echo "$minimal_content"
-              exit 1
+            echo
+            echo "<details><summary>foundry.toml diff (informational)</summary>"
+            echo
+            echo '```diff'
+            git diff --no-color origin/main:foundry.toml origin/minimal:foundry.toml || true
+            echo '```'
+            echo
+            echo "</details>"
+
+            if [ "$drift" -eq 1 ]; then
+              echo
+              echo "Drift is expected between merging to \`main\` and running the sync"
+              echo "script, so this check reports rather than blocks. See issue #26 for"
+              echo "the plan to generate \`minimal\` from \`main\` and remove this check."
             fi
-          }
-
-          # Compare each critical file
-          for file in "${critical_files[@]}"; do
-            compare_files "$file"
-          done
-
-          echo "All critical files are consistent between branches."
+          } >> "$GITHUB_STEP_SUMMARY"
