@@ -18,12 +18,12 @@ LazerForge is a batteries included template with the following configurations:
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
 - A `justfile` with the common Foundry recipes (`just --list`)
 - A pre-configured, but still minimal `foundry.toml`
-  - multiple profiles for various development and testing scenarios (see [LazerForge Profiles](lazerTutorial/profiles.md))
+  - multiple profiles for various development and testing scenarios
   - high optimizer settings by default for gas-efficient smart contracts
   - an explicit `solc` compiler version for reproducible builds
   - no extra injected `solc` metadata for simpler Etherscan verification and [deterministic cross-chain deploys via CREATE2](https://0xfoobar.substack.com/p/vanity-addresses).
-  - block height and timestamp variables for [deterministic testing](lazerTutorial/testing.md)
-  - mapped [network identifiers](lazerTutorial/networks.md) to RPC URLs and Etherscan API keys using environment variables
+  - block height and timestamp variables for deterministic testing
+  - mapped network identifiers to RPC URLs and Etherscan API keys using environment variables
 
 ## Quick Start
 
@@ -70,7 +70,7 @@ forge build
 - **`main`**: Contains tutorials, additional example contracts, and comprehensive dependencies.
 - **`variant/*`**: Lighter starting points, currently `variant/minimal` — a lightweight template without extra tutorials and dependencies.
 
-Everything under `variant/` is generated from `main` — a build artifact described by a manifest in [`variants/`](variants/) and rebuilt by CI on every push. Contributors only ever work on `main`.
+Everything under `variant/` is generated from `main` — a build artifact described by a manifest in `variants/` on `main` and rebuilt by CI on every push. Contributors only ever work on `main`.
 
 For detailed info on branches and contribution, check out the [Contributing Guide](CONTRIBUTING.md).
 
@@ -112,17 +112,28 @@ Common tasks live in the `justfile`. [Install just](https://github.com/casey/jus
 ```bash
 just build            # forge build (src/ only)
 just test             # forge test (src/ only)
-<!-- variant:full:start -->
-just examples-build   # demo contracts under examples/
-just examples-test    # demo tests
-just snapshot         # gas snapshot for examples
-<!-- variant:full:end -->
 just fmt              # forge fmt
 just lint             # forge lint
 just cov              # coverage summary + HTML report
 ```
 
-Recipes accept extra flags (`just test --match-test test_Increment`). <!-- variant:full:start -->Demo contracts live under `examples/` and need `FOUNDRY_PROFILE=examples` (or the `just examples-*` recipes). <!-- variant:full:end -->`just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep". CI also checks gas snapshots and uploads `lcov.info` as a workflow artifact — see the [Testing Guide](lazerTutorial/testing.md) for details.
+<!-- variant:full:start -->
+
+The demo contracts under `examples/` build and test through their own profile:
+
+```bash
+just examples-build   # demo contracts under examples/
+just examples-test    # demo tests
+just snapshot         # gas snapshot for examples
+```
+
+Anything not covered by a recipe takes `FOUNDRY_PROFILE=examples` directly. CI checks the gas snapshot for these on every PR.
+
+<!-- variant:full:end -->
+
+Recipes accept extra flags (`just test --match-test test_Increment`). `just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep". CI uploads `lcov.info` as a workflow artifact.
+
+<!-- variant:full:start -->
 
 ## Documentation
 
@@ -133,3 +144,5 @@ For detailed guides on various aspects of LazerForge, check out:
 - [Deployment Guide](lazerTutorial/deployment.md) - Deploying contracts
 - [Network Configuration](lazerTutorial/networks.md) - Setting up networks and RPC endpoints
 - [Profiles](lazerTutorial/profiles.md) - Using different Foundry profiles
+
+<!-- variant:full:end -->
