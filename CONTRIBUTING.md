@@ -41,10 +41,12 @@ This means variant branches are finally tested, and cannot drift from `main`.
 ### Building a variant locally
 
 ```bash
-just variant minimal        # or: tools/build-variant.sh minimal
+just variant minimal --ref HEAD    # or: tools/build-variant.sh minimal --ref HEAD
 ```
 
-That writes a git worktree to `.variant-build/minimal/` and stops without pushing, so you can inspect the result:
+Variants are built from `origin/main` by default, which is what CI wants but almost never what you want while working on a branch — pass `--ref HEAD` to build from your own commits. Note that it builds from a **commit**, not your working tree, so commit before rebuilding.
+
+It writes a git worktree to `.variant-build/minimal/` and stops without pushing, so you can inspect the result:
 
 ```bash
 git -C .variant-build/minimal show --stat
