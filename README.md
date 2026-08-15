@@ -64,14 +64,12 @@ forge build
 
 ## Branch Structure
 
-LazerForge maintains two primary branches to cater to different needs:
-
 - **`main` Branch**: Contains tutorials, additional example contracts, and comprehensive dependencies.
 - **`minimal` Branch**: Provides a lightweight template without extra tutorials and dependencies.
 
-For detailed info on branches and contribution, check out the [Contributing Guide](CONTRIBUTING.md).
+`minimal` is generated from `main` — it is a build artifact, described by a manifest in [`variants/`](variants/) and rebuilt by CI on every push. Contributors only ever work on `main`.
 
-> See [sync script usage](CONTRIBUTING.md#syncing-changes-between-branches) for automating branch sync.
+For detailed info on branches and contribution, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## Dependencies
 

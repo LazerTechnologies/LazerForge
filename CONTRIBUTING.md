@@ -6,89 +6,77 @@ The goal of this repo is to provide not only an optimized configuration for expe
 - Expanded [tutorials](/lazerTutorial/README.md) on smart contract development and testing in foundry
 - Helpful test examples
 
-## Branch Structure and Guidelines
+## Branch Structure
+
+> **`main` is the only branch you should ever commit to.**
+>
+> Every other branch is generated from it and will be overwritten without warning.
 
 ### Branch Overview
 
-This repository maintains two primary branches with distinct purposes:
+1. **`main`**
 
-1. **`main` Branch**
+   - Includes all tutorials, examples, and dependencies
+   - The single source of truth, and the only branch that accepts PRs
 
-   - Includes all tutorials, examples, and additional dependencies
-   - Serves as the primary development and reference branch
+2. **`minimal`** and any future starter branches
+   - Stripped-down versions for users who want a lighter starting point
+   - **Build artifacts**, regenerated from `main` on every push
+   - Never edited by hand
 
-2. **`minimal` Branch**
-   - Provides a stripped-down, essential version of the project
-   - Excludes tutorials, extensive examples, and non-core dependencies
-   - Designed for users who need a lightweight, core implementation
+Users are unaffected by any of this — `forge init --template lazertechnologies/lazerforge --branch minimal` works exactly as before.
 
-### Branch Preservation Guidelines
+## How Variant Branches Are Generated
 
-- **Do Not Merge Branches Directly**
-  - The `main` and `minimal` branches are intentionally kept separate
-  - Direct merges between these branches are prohibited
-  - Branch protection rules are in place to prevent accidental merging
+Each variant is described by a manifest in [`variants/`](variants/), and built by [`tools/build-variant.sh`](tools/build-variant.sh). On every push to `main`, CI regenerates each variant, runs `forge build`, `forge test`, and `forge fmt --check` **against the generated tree**, and publishes it only if all of that passes.
 
-### Config Contributions
+This means variant branches are finally tested, and cannot drift from `main`.
 
-- If you want to contribute changes that should apply to both branches:
-  1. Make changes in the `main` branch first
-  2. Carefully cherry-pick or selectively apply changes to the `minimal` branch
-  3. Ensure that the `minimal` branch remains lean and focused
-
-### Pulling Updates
-
-- To update the `minimal` branch with specific changes from `main`:
-
-  ```bash
-  # Fetch changes
-  git fetch origin main
-
-  # Selectively checkout specific files
-  git checkout origin/main -- foundry.toml
-  git checkout origin/main -- README.md
-  git checkout origin/main -- sample.env
-
-  # Commit only the desired changes
-  git commit -m "Selectively update minimal branch"
-  ```
-
-## Syncing Changes Between Branches
-
-We use a dedicated synchronization workflow to maintain consistency between branches while respecting their different purposes.
-
-**To sync changes from `main` to `minimal`:**
-
-1. Ensure your changes are merged to `main` first
-2. Run the sync script:
+### Building a variant locally
 
 ```bash
-./tools/sync-to-minimal.sh
+tools/build-variant.sh minimal
 ```
 
-3. The script will:
-
-   - Update a dedicated sync branch with the latest from `main`
-   - Open a PR creation page targeting `minimal`
-
-4. During PR review:
-   - Verify only appropriate files are included
-   - Exclude tutorial content or other files not needed in `minimal`
-
-**For emergency fixes in `minimal`:**
-
-If you need to make a hotfix directly to `minimal` and then sync back to `main`:
-
-1. Make and merge your changes to `minimal`
-2. Run:
+That writes a git worktree to `.variant-build/minimal/` and stops without pushing, so you can inspect the result:
 
 ```bash
-./tools/sync-to-main.sh
+git -C .variant-build/minimal show --stat
 ```
 
-3. Complete a PR to sync these changes back to `main`
+Add `--push` to publish, though in normal use CI does that for you.
 
-> Always make feature development PRs to `main` first, and use the sync scripts rather than manually cherry-picking to maintain consistency.
+### Changing what a variant contains
+
+There are three mechanisms, in rough order of preference:
+
+1. **Remove a path** — add it to `remove:` in `variants/<variant>.yml`. This covers whole files and directories.
+
+2. **Remove part of a shared file** — wrap the lines in a marker region. This is how `minimal` drops the Uniswap dependencies while `foundry.toml` stays a single file on `main`:
+
+   ```toml
+   # variant:full:start
+   '@uniswap/v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
+   # variant:full:end
+   ```
+
+   The name list is comma separated (`# variant:full,defi:start` keeps the region for both), `full` means `main` itself, and the marker lines are always stripped from generated output. Both `#` and `//` comment prefixes work, so this applies to Solidity as well as TOML.
+
+   A marker has to be alone on its line, so mentioning one in prose does nothing. Markdown files are skipped entirely — otherwise this very section would be treated as a region to strip. Use an overlay for per-variant documentation.
+
+3. **Replace a file entirely** — drop a copy at `variants/<variant>/files/<path>`. It is copied over the tree last. `minimal` uses this for `script/Deploy.s.sol`, which deploys `InflationToken` rather than the `BalanceManager` that `minimal` removes.
+
+The build script fails rather than producing a broken branch if a manifest entry no longer matches anything, if a marker region is unbalanced, if a remapping is left pointing at a dependency the variant removed, or if a removed contract is still imported by a file that survives.
+
+### Adding a new variant
+
+Copy `variants/minimal.yml`, adjust it, and open a PR. CI discovers manifests automatically — there is no list to update, and no new branch to babysit.
+
+### If you need to change a variant branch
+
+You cannot, directly. Make the change on `main`, or to the variant's manifest, and let the build produce it. Branch protection on the generated branches enforces this.
+
+> **Maintainers:** the generated branches need branch protection that blocks direct pushes from everyone except the `Build Variant Branches` workflow, which needs `contents: write`.
 
 ## Questions or Clarifications
 
