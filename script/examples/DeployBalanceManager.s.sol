@@ -1,27 +1,36 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import "forge-std/Script.sol";
-import "../../examples/BalanceManager.sol";
+import {console} from "forge-std/console.sol";
+import {BalanceManager} from "../../examples/BalanceManager.sol";
+import {DeployBase} from "../utils/DeployBase.s.sol";
 
 /**
  * @title DeployBalanceManager
- * @notice This script deploys BalanceManager. Simulate running it by entering
- *         `forge script script/examples/DeployBalanceManager.s.sol --sender <the_caller_address>
- *         --fork-url $SEPOLIA_RPC_URL -vvvv` in the terminal. To run it for
- *         real, change it to `forge script script/examples/DeployBalanceManager.s.sol
- *         --fork-url $SEPOLIA_RPC_URL --broadcast`.
- *         Requires FOUNDRY_PROFILE=examples.
+ * @notice Deploys BalanceManager with the broadcaster as `initialOwner` (examples profile).
+ *
+ * Preferred (encrypted keystore):
+ *   cast wallet import deployer --interactive
+ *   FOUNDRY_PROFILE=examples forge script script/examples/DeployBalanceManager.s.sol \
+ *     --account deployer --rpc-url sepolia --broadcast --verify
+ *
+ * CI / automation (plaintext key in the environment):
+ *   FOUNDRY_PROFILE=examples forge script script/examples/DeployBalanceManager.s.sol \
+ *     --rpc-url sepolia --broadcast
+ *   # with DEPLOYER_PRIVATE_KEY set
+ *
+ * Simulate without broadcasting:
+ *   FOUNDRY_PROFILE=examples forge script script/examples/DeployBalanceManager.s.sol \
+ *     --sender <address> --fork-url $SEPOLIA_RPC_URL -vvvv
  */
-contract DeployBalanceManager is Script {
+contract DeployBalanceManager is DeployBase {
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-        // OpenZeppelin's Ownable rejects the zero address, and BalanceManager now
-        // actually honours this argument, so hand it the broadcasting account
-        address deployer = vm.addr(deployerPrivateKey);
-
-        vm.broadcast(deployerPrivateKey);
+        _startBroadcast();
+        // OpenZeppelin's Ownable rejects address(0); pass the broadcasting account.
         BalanceManager balanceManager = new BalanceManager(deployer);
+        _stopBroadcast();
+
+        _writeDeployment("BalanceManager", address(balanceManager));
         console.log("BalanceManager deployed at:", address(balanceManager));
     }
 }

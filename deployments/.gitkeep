@@ -1,0 +1,2 @@
+# Deploy scripts write addresses here as `<chainid>.json` (see script/utils/DeployBase.s.sol).
+# Keep this directory in git so the path exists in fresh clones; commit records you want shared.
