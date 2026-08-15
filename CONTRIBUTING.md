@@ -109,9 +109,11 @@ That is the whole process. CI discovers manifests automatically, so there is no 
 
 ### If you need to change a variant branch
 
-You cannot, directly. Make the change on `main`, or to the variant's manifest, and let the build produce it.
+Don't. Make the change on `main`, or to the variant's manifest, and let the build produce it.
 
-> **Maintainers:** importable rulesets that enforce all of this live in [`.github/rulesets/`](.github/rulesets/), along with notes on what each one does.
+If you push to one anyway, it will not stick: every build replaces the whole tree with generated content, and a push to `variant/**` triggers a rebuild immediately, so the change is reverted within a minute or so.
+
+> **Maintainers:** importable rulesets live in [`.github/rulesets/`](.github/rulesets/), with notes on what each one does and why the variant branches are not update-restricted.
 
 ## Questions or Clarifications
 

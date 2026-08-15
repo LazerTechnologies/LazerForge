@@ -1,13 +1,18 @@
 name: Build Variant Branches
 
-# Variant branches (`minimal`, and the starters planned in the README) are build
-# artifacts of `main`. This workflow regenerates them, compiles and tests the
-# generated tree, and publishes it only if that passes - so the variants finally
-# get tested, and cannot drift from `main`.
+# Variant branches (`variant/minimal`, and the starters planned in the README)
+# are build artifacts of `main`. This workflow regenerates them, compiles and
+# tests the generated tree, and publishes it only if that passes - so the
+# variants finally get tested, and cannot drift from `main`.
 
 on:
   push:
-    branches: [main]
+    # `variant/**` is the self-heal path. A ruleset cannot stop someone pushing
+    # to a generated branch: restricting updates would block this workflow too,
+    # because GITHUB_TOKEN cannot be granted a bypass. Instead, a push to one
+    # triggers an immediate rebuild from `main` that overwrites it. Pushes made
+    # with GITHUB_TOKEN do not trigger workflows, so this cannot loop.
+    branches: [main, "variant/**"]
   pull_request:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
@@ -27,7 +32,11 @@ jobs:
     outputs:
       variants: ${{ steps.list.outputs.variants }}
     steps:
+      # generated branches carry neither variants/ nor tools/, so a push to one
+      # has to be answered by reading the manifests from `main`
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
 
       - name: List variant manifests
         id: list
@@ -55,6 +64,7 @@ jobs:
           # the build bases each variant on its existing published branch, so it
           # needs the full history and every remote-tracking ref
           fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
 
       - name: Fetch branches
         run: git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
@@ -72,7 +82,11 @@ jobs:
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
       - name: Generate variant
-        run: tools/build-variant.sh "${{ matrix.variant }}" --ref "${{ github.sha }}"
+        env:
+          # a PR builds its own merge commit so the check reflects the change;
+          # everything else publishes whatever is currently on `main`
+          BUILD_REF: ${{ github.event_name == 'pull_request' && github.sha || 'origin/main' }}
+        run: tools/build-variant.sh "${{ matrix.variant }}" --ref "$BUILD_REF"
 
       - name: Show generated tree
         run: git -C ".variant-build/${{ matrix.variant }}" show --stat HEAD
