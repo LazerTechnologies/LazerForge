@@ -51,7 +51,6 @@ This profile is designed for CI environments with:
 
 - increased number of fuzz runs (1024)
 - more thorough testing
-- better coverage
 
 ### Via-IR Profile
 
@@ -73,7 +72,7 @@ FOUNDRY_PROFILE=coverage forge coverage
 just cov
 ```
 
-Coverage instrumentation with the default 9_999_999 optimizer runs can hit "stack too deep". This profile turns the optimizer off. `just cov` selects it automatically and also writes the HTML report.
+Use this profile when generating coverage reports. It turns the optimizer off because the default `optimizer_runs = 9_999_999` destroys the source maps `forge coverage` needs, and it keeps fuzz runs small so reports stay fast. `just cov` selects it automatically and writes the HTML report. The CI coverage job sets `FOUNDRY_PROFILE=coverage` for you.
 
 ### FFI Profile
 
@@ -100,6 +99,9 @@ FOUNDRY_PROFILE=gas forge build
 
 # Run tests with CI settings
 FOUNDRY_PROFILE=ci forge test
+
+# Generate a coverage report
+FOUNDRY_PROFILE=coverage forge coverage
 
 # Deploy with via-IR
 FOUNDRY_PROFILE=via_ir forge script script/DeployBalanceManager.s.sol:DeployBalanceManager
@@ -147,6 +149,9 @@ forge test
 
 # Thorough fuzz testing
 FOUNDRY_PROFILE=ci forge test
+
+# Coverage report (optimizer off)
+FOUNDRY_PROFILE=coverage forge coverage
 ```
 
 ### Deployment
@@ -178,6 +183,7 @@ fuzz_runs = 500
 
    - Use `gas` profile for production deployments
    - Use `CI.fuzz` for thorough testing
+   - Use `coverage` for coverage reports
    - Use `via_ir` for complex contracts
 
 2. **Document Profile Usage**
