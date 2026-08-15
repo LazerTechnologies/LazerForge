@@ -18,7 +18,7 @@ LazerForge comes packaged with several pre-configured profiles:
 ### Default Profile
 
 ```bash
-forge build --profile default
+FOUNDRY_PROFILE=default forge build
 # or simply
 forge build
 ```
@@ -32,7 +32,7 @@ The default profile is used when no profile is specified. It includes:
 ### Gas Optimization Profile
 
 ```bash
-forge build --profile gas
+FOUNDRY_PROFILE=gas forge build
 ```
 
 Use this profile when you want to:
@@ -44,7 +44,7 @@ Use this profile when you want to:
 ### CI Fuzz Testing Profile
 
 ```bash
-forge test --profile CI.fuzz
+FOUNDRY_PROFILE=ci forge test
 ```
 
 This profile is designed for CI environments with:
@@ -56,7 +56,7 @@ This profile is designed for CI environments with:
 ### Via-IR Profile
 
 ```bash
-forge build --profile via_ir
+FOUNDRY_PROFILE=via_ir forge build
 ```
 
 Use this profile when:
@@ -68,7 +68,7 @@ Use this profile when:
 ### FFI Profile
 
 ```bash
-forge test --profile ffi
+FOUNDRY_PROFILE=ffi forge test
 ```
 
 For tests that require:
@@ -79,22 +79,23 @@ For tests that require:
 
 ## How to Use Profiles
 
-### 1. Using Command Line Flags
+### 1. Per-command
 
-The most common way to use profiles is with the `--profile` flag:
+`forge` has no `--profile` flag. Select a profile by setting the
+`FOUNDRY_PROFILE` environment variable for a single command:
 
 ```bash
 # Build with gas optimization
-forge build --profile gas
+FOUNDRY_PROFILE=gas forge build
 
 # Run tests with CI settings
-forge test --profile CI.fuzz
+FOUNDRY_PROFILE=ci forge test
 
 # Deploy with via-IR
-forge script script/Deploy.s.sol:DeployScript --profile via_ir
+FOUNDRY_PROFILE=via_ir forge script script/Deploy.s.sol:DeployScript
 ```
 
-### 2. Using Environment Variables
+### 2. For an entire shell session
 
 You can set a profile for all commands in your current shell:
 
@@ -109,10 +110,10 @@ When deploying contracts:
 
 ```bash
 # Deploy with gas optimization
-forge script script/Deploy.s.sol:DeployScript --profile gas --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
 
 # Deploy with via-IR for complex contracts
-forge script script/Deploy.s.sol:DeployScript --profile via_ir --rpc-url $RPC_URL
+FOUNDRY_PROFILE=via_ir forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
 ```
 
 ## Common Use Cases
@@ -125,7 +126,7 @@ forge build
 forge test
 
 # When you need gas optimization
-forge build --profile gas
+FOUNDRY_PROFILE=gas forge build
 ```
 
 ### Testing
@@ -135,7 +136,7 @@ forge build --profile gas
 forge test
 
 # Thorough fuzz testing
-forge test --profile CI.fuzz
+FOUNDRY_PROFILE=ci forge test
 ```
 
 ### Deployment
@@ -145,7 +146,7 @@ forge test --profile CI.fuzz
 forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
 
 # Gas-optimized deployment
-forge script script/Deploy.s.sol:DeployScript --profile gas --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
 ```
 
 ## Creating Your Own Profiles
