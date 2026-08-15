@@ -37,9 +37,12 @@ jobs:
         id: test
         run: forge test -vvv
 
-  # variant:full:start
+  # Skip on variant/minimal (no examples/). Runtime `if` keeps this workflow
+  # identical across branches so variant publish can use GITHUB_TOKEN — GitHub
+  # rejects pushes of workflow content that does not already exist elsewhere.
   examples:
     name: Examples
+    if: hashFiles('examples/**/*.sol') != ''
     runs-on: ubuntu-latest
     env:
       FOUNDRY_PROFILE: examples
@@ -62,6 +65,7 @@ jobs:
 
   gas:
     name: Gas snapshot
+    if: hashFiles('examples/**/*.sol') != ''
     runs-on: ubuntu-latest
     env:
       # Snapshot the example contracts — Counter gas is not interesting.
@@ -76,7 +80,6 @@ jobs:
       # the same filter after a gas-affecting change.
       - name: Check gas snapshot
         run: forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
-  # variant:full:end
 
   coverage:
     name: Coverage
