@@ -14,7 +14,7 @@ LazerForge is a batteries included template with the following configurations:
 <!-- variant:full:end -->
 - Dependencies managed with [Soldeer](https://soldeer.xyz) — declared in `foundry.toml` and version-locked in `soldeer.lock`, so they can be added, removed, and upgraded with a single command
 - `forge fmt` configured as the default formatter for VSCode projects
-- Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
+- Github Actions workflows that run `forge fmt --check`, `forge test`, `forge snapshot --check`, and `forge coverage` on every push and PR. Soldeer dependencies and Forge artifacts are cached across runs.
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
 - A `justfile` with the common Foundry recipes (`just --list`)
 - A pre-configured, but still minimal `foundry.toml`
@@ -118,7 +118,7 @@ just snapshot    # forge snapshot
 just cov         # coverage summary + HTML report
 ```
 
-Recipes accept extra flags (`just test --match-test test_Deposit`). `just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep".
+Recipes accept extra flags (`just test --match-test test_Deposit`). `just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep". CI also checks gas snapshots and uploads `lcov.info` as a workflow artifact — see the [Testing Guide](lazerTutorial/testing.md) for details.
 
 ## Documentation
 

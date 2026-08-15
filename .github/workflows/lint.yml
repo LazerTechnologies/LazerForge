@@ -23,15 +23,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+      # lint does not compile, so skip the Forge artifact cache
+      - uses: ./.github/actions/setup-foundry
         with:
-          # pinned rather than `nightly` so CI matches the reproducible-build claim
-          version: v1.7.1
-
-      # `forge lint` parses imports, so the dependencies have to be present
-      - name: Install dependencies
-        run: forge soldeer install
+          cache-artifacts: "false"
 
       - name: Check formatting
         run: |

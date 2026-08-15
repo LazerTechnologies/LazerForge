@@ -30,10 +30,16 @@ forge test --match-path test/Contract.t.sol --match-test test_Deposit
 
 Forge can generate gas snapshots for all test functions to see how much gas contracts will consume, or to compare gas usage before and after optimizations.
 
+A committed `.gas-snapshot` is checked in CI. Fuzz and invariant tests are excluded because their gas depends on random inputs.
+
 ```shell
-forge snapshot
+# update the snapshot after a gas-affecting change
+forge snapshot --nmt 'test_fuzz|testFuzz|invariant'
 # or
-just snapshot
+just snapshot --nmt 'test_fuzz|testFuzz|invariant'
+
+# fail if gas changed (this is what CI runs)
+forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
 ```
 
 ## Coverage Reports
@@ -50,7 +56,7 @@ Then run:
 just cov
 ```
 
-That uses `[profile.coverage]` in `foundry.toml` (optimizer off) so instrumentation does not hit "stack too deep" against the template's high `optimizer_runs`. It writes a summary, `lcov.info`, and an HTML report under `coverage/`.
+That uses `[profile.coverage]` in `foundry.toml` (optimizer off) so instrumentation does not hit "stack too deep" against the template's high `optimizer_runs`. It writes a summary, `lcov.info`, and an HTML report under `coverage/`. CI uploads `lcov.info` as a workflow artifact.
 
 ## Writing Tests
 

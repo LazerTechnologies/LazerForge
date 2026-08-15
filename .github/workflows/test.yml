@@ -16,33 +16,61 @@ permissions:
 
 jobs:
   check:
-    strategy:
-      fail-fast: true
-
-    name: Forge Tests
+    name: Foundry project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          # pinned rather than `nightly` so CI matches the reproducible-build claim
-          version: v1.7.1
-
-      # dependencies are declared in foundry.toml and locked in soldeer.lock, not
-      # vendored, so they have to be fetched before anything can compile
-      - name: Install dependencies
-        run: forge soldeer install
+      - uses: ./.github/actions/setup-foundry
 
       - name: Run Forge build
         id: build
         run: |
           forge --version
-          forge build --sizes
-        # don't fail on oversized contracts; tests below still catch build errors
+          forge build
+
+      # Size regressions don't fail CI while example contracts still live in
+      # src/ (see #30). Revisit this once that issue lands. Compile errors are
+      # already gated by the build step above.
+      - name: Check contract sizes
+        run: forge build --sizes
         continue-on-error: true
 
       - name: Run Forge tests
         id: test
         run: forge test -vvv
+
+  gas:
+    name: Gas snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-foundry
+
+      # Fuzz and invariant tests are excluded: their gas depends on random
+      # inputs, so they cannot gate PRs. Update the committed snapshot with
+      # the same filter after a gas-affecting change.
+      - name: Check gas snapshot
+        run: forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      # [profile.coverage] turns the optimizer off; high optimizer_runs
+      # destroys the source maps coverage needs.
+      FOUNDRY_PROFILE: coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-foundry
+
+      - name: Generate coverage report
+        run: forge coverage --report summary --report lcov --exclude-tests
+
+      - name: Upload lcov artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov.info
+          path: lcov.info
