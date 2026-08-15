@@ -8,7 +8,10 @@ LazerForge is a Foundry template for smart contract development. For more inform
 
 LazerForge is a batteries included template with the following configurations:
 
-- [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts), [Solady](https://github.com/Vectorized/solady), and the full Uniswap suite ([v2](https://github.com/uniswap/v2-core), [v3-core](https://github.com/uniswap/v3-core) & [v3-periphery](https://github.com/uniswap/v3-periphery), [v4-core](https://github.com/uniswap/v4-core) & [v4-periphery](https://github.com/uniswap/v4-periphery)) smart contracts are included as dependencies along with [`solc` remappings](https://docs.soliditylang.org/en/latest/path-resolution.html#import-remapping) so you can work with a wide range of deployed contracts out of the box!
+- [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts) and [Solady](https://github.com/Vectorized/solady) smart contracts are included as dependencies, along with [`solc` remappings](https://docs.soliditylang.org/en/latest/path-resolution.html#import-remapping) so you can work with deployed contracts out of the box!
+<!-- variant:full:start -->
+- The full Uniswap suite ([v2](https://github.com/uniswap/v2-core), [v3-core](https://github.com/uniswap/v3-core) & [v3-periphery](https://github.com/uniswap/v3-periphery), [v4-core](https://github.com/uniswap/v4-core) & [v4-periphery](https://github.com/uniswap/v4-periphery)) is included too, so you can build against a wide range of on-chain liquidity
+<!-- variant:full:end -->
 - Dependencies managed with [Soldeer](https://soldeer.xyz) — declared in `foundry.toml` and version-locked in `soldeer.lock`, so they can be added, removed, and upgraded with a single command
 - `forge fmt` configured as the default formatter for VSCode projects
 - Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
@@ -42,13 +45,13 @@ forge init --template lazertechnologies/lazerforge <project_name>
 [Minimal repo](#branch-structure) with just optimized config:
 
 ```bash
-forge init --template lazertechnologies/lazerforge --branch minimal <project_name>
+forge init --template lazertechnologies/lazerforge --branch variant/minimal <project_name>
 ```
 
-- DeFi Starter: 🚧 coming soon
-- NFT Starter: 🚧 coming soon
-- Stablecoin Starter: 🚧 coming soon
-- Cross-Chain starter: 🚧 coming soon
+- DeFi Starter: 🚧 coming soon (`--branch variant/defi`)
+- NFT Starter: 🚧 coming soon (`--branch variant/nft`)
+- Stablecoin Starter: 🚧 coming soon (`--branch variant/stablecoin`)
+- Cross-Chain starter: 🚧 coming soon (`--branch variant/cross-chain`)
 
 3. Install dependencies:
 
@@ -64,10 +67,10 @@ forge build
 
 ## Branch Structure
 
-- **`main` Branch**: Contains tutorials, additional example contracts, and comprehensive dependencies.
-- **`minimal` Branch**: Provides a lightweight template without extra tutorials and dependencies.
+- **`main`**: Contains tutorials, additional example contracts, and comprehensive dependencies.
+- **`variant/*`**: Lighter starting points, currently `variant/minimal` — a lightweight template without extra tutorials and dependencies.
 
-`minimal` is generated from `main` — it is a build artifact, described by a manifest in [`variants/`](variants/) and rebuilt by CI on every push. Contributors only ever work on `main`.
+Everything under `variant/` is generated from `main` — a build artifact described by a manifest in [`variants/`](variants/) and rebuilt by CI on every push. Contributors only ever work on `main`.
 
 For detailed info on branches and contribution, check out the [Contributing Guide](CONTRIBUTING.md).
 
@@ -91,12 +94,16 @@ forge soldeer update                     # upgrade within declared ranges
 
 Remappings are maintained by hand in `foundry.toml` rather than generated, so the template can keep import aliases like `@openzeppelin/contracts/`. The paths include the version number — update the matching remapping whenever you change a dependency's version.
 
+<!-- variant:full:start -->
+
 The Uniswap aliases resolve to the package root, matching the import paths in Uniswap's own documentation. These packages import each other by their full published path, so the alias cannot point any deeper:
 
 ```solidity
 import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 ```
+
+<!-- variant:full:end -->
 
 ## Commands
 
