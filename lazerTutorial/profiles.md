@@ -86,6 +86,15 @@ For tests that require:
 - external process calls
 - system-level interactions
 
+### Examples Profile
+
+```bash
+FOUNDRY_PROFILE=examples forge build
+FOUNDRY_PROFILE=examples forge test
+```
+
+Builds and tests the demo contracts under `examples/` (`BalanceManager`, `InflationToken`, `CREATE3Factory`, …). The default profile only compiles `src/` so a fresh template build is your code, not the demos.
+
 ## How to Use Profiles
 
 ### 1. Per-command
@@ -104,7 +113,11 @@ FOUNDRY_PROFILE=ci forge test
 FOUNDRY_PROFILE=coverage forge coverage
 
 # Deploy with via-IR
-FOUNDRY_PROFILE=via_ir forge script script/DeployBalanceManager.s.sol:DeployBalanceManager
+FOUNDRY_PROFILE=via_ir forge script script/DeployCounter.s.sol:DeployCounter
+
+# Build / test the demo contracts
+FOUNDRY_PROFILE=examples forge build
+FOUNDRY_PROFILE=examples forge script script/examples/DeployBalanceManager.s.sol:DeployBalanceManager
 ```
 
 ### 2. For an entire shell session
@@ -122,10 +135,10 @@ When deploying contracts:
 
 ```bash
 # Deploy with gas optimization
-FOUNDRY_PROFILE=gas forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/DeployCounter.s.sol:DeployCounter --rpc-url $RPC_URL
 
 # Deploy with via-IR for complex contracts
-FOUNDRY_PROFILE=via_ir forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
+FOUNDRY_PROFILE=via_ir forge script script/DeployCounter.s.sol:DeployCounter --rpc-url $RPC_URL
 ```
 
 ## Common Use Cases
@@ -158,10 +171,10 @@ FOUNDRY_PROFILE=coverage forge coverage
 
 ```bash
 # Standard deployment
-forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
+forge script script/DeployCounter.s.sol:DeployCounter --rpc-url $RPC_URL
 
 # Gas-optimized deployment
-FOUNDRY_PROFILE=gas forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/DeployCounter.s.sol:DeployCounter --rpc-url $RPC_URL
 ```
 
 ## Creating Your Own Profiles

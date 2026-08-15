@@ -60,7 +60,7 @@ There are two mechanisms. Prefer the first.
 
 **1. Remove a path** — add it to `remove:` in `variants/<variant>.yml`. This covers whole files and directories.
 
-Structure the repo so this is usually enough. Deploy scripts are one per contract — `DeployBalanceManager.s.sol`, `DeployInflationToken.s.sol` — precisely so that a variant which drops a contract just drops its script. A single `Deploy.s.sol` naming one contract would need special handling in every variant that lacks it.
+Structure the repo so this is usually enough. Demo contracts live under `examples/` (with matching `test/examples/` and `script/examples/`), so `minimal` drops those three directories in one go. User-facing starter code stays in `src/` / `test/` / `script/`.
 
 **2. Remove part of a shared file** — wrap the lines in a marker region. This is how `minimal` drops the Uniswap dependencies while `foundry.toml` stays a single file on `main`:
 

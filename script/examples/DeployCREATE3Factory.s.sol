@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {CREATE3Factory} from "../src/CREATE3Factory.sol";
+import {CREATE3Factory} from "../../examples/CREATE3Factory.sol";
 
-import {Utils} from "../script/utils/Utils.sol";
+import {Utils} from "../utils/Utils.sol";
 
 contract DeployCREATE3Factory is Utils {
     CREATE3Factory factory;

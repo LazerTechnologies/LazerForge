@@ -2,7 +2,13 @@
 
 LazerForge is a Foundry template designed to get Lazerites up and running quickly without having to configure Foundry for every projects. It provides a comprehensive development environment with pre-configured settings, essential dependencies, and best practices for smart contract development.
 
-This tutorial directory contains example contracts, tests, and scripts that showcase different types of smart contracts and common patterns. These examples serve as reference implementations and learning resources for various smart contract concepts and best practices.
+Demo contracts live under `examples/` (with tests in `test/examples/` and scripts in `script/examples/`). They are reference implementations — not part of the default build:
+
+```bash
+FOUNDRY_PROFILE=examples forge build
+FOUNDRY_PROFILE=examples forge test
+# or: just examples-build / just examples-test
+```
 
 ## Example Contracts
 
@@ -10,6 +16,7 @@ This tutorial directory contains example contracts, tests, and scripts that show
 | ---------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | `InflationToken` | ERC20 token with inflation mechanism                                                                  | - Access Control<br>- Time-based Operations<br>- Token Economics       |
 | `BalanceManager` | Contract for managing token balances                                                                  | - Admin Management<br>- Balance Tracking<br>- Contract Interactions    |
+| `CREATE3Factory` | Factory for deterministic CREATE3 deployments                                                         | - CREATE3<br>- Cross-chain address stability                           |
 | `Rescue`         | Utility for recovering funds that were accidentally sent to a contract address on a different network | - Deterministic Deployment<br>- ETH/ERC20 Recovery<br>- Access Control |
 
 ## Getting Started

@@ -30,20 +30,36 @@ jobs:
           forge --version
           forge build
 
-      # Size regressions don't fail CI while example contracts still live in
-      # src/ (see #30). Revisit this once that issue lands. Compile errors are
-      # already gated by the build step above.
       - name: Check contract sizes
         run: forge build --sizes
-        continue-on-error: true
 
       - name: Run Forge tests
         id: test
         run: forge test -vvv
 
+  # variant:full:start
+  examples:
+    name: Examples
+    runs-on: ubuntu-latest
+    env:
+      FOUNDRY_PROFILE: examples
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-foundry
+
+      - name: Build examples
+        run: forge build
+
+      - name: Test examples
+        run: forge test -vvv
+
   gas:
     name: Gas snapshot
     runs-on: ubuntu-latest
+    env:
+      # Snapshot the example contracts — Counter gas is not interesting.
+      FOUNDRY_PROFILE: examples
     steps:
       - uses: actions/checkout@v4
 
@@ -54,13 +70,15 @@ jobs:
       # the same filter after a gas-affecting change.
       - name: Check gas snapshot
         run: forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
+  # variant:full:end
 
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
     env:
       # [profile.coverage] turns the optimizer off; high optimizer_runs
-      # destroys the source maps coverage needs.
+      # destroys the source maps coverage needs. Cover src/ (Counter / user
+      # code). Example coverage: FOUNDRY_PROFILE=examples with optimizer off.
       FOUNDRY_PROFILE: coverage
     steps:
       - uses: actions/checkout@v4

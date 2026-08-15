@@ -110,15 +110,19 @@ import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 Common tasks live in the `justfile`. [Install just](https://github.com/casey/just#installation), then run `just` (or `just --list`) to see them:
 
 ```bash
-just build       # forge build
-just test        # forge test
-just fmt         # forge fmt
-just lint        # forge lint
-just snapshot    # forge snapshot
-just cov         # coverage summary + HTML report
+just build            # forge build (src/ only)
+just test             # forge test (src/ only)
+<!-- variant:full:start -->
+just examples-build   # demo contracts under examples/
+just examples-test    # demo tests
+just snapshot         # gas snapshot for examples
+<!-- variant:full:end -->
+just fmt              # forge fmt
+just lint             # forge lint
+just cov              # coverage summary + HTML report
 ```
 
-Recipes accept extra flags (`just test --match-test test_Deposit`). `just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep". CI also checks gas snapshots and uploads `lcov.info` as a workflow artifact — see the [Testing Guide](lazerTutorial/testing.md) for details.
+Recipes accept extra flags (`just test --match-test test_Increment`). <!-- variant:full:start -->Demo contracts live under `examples/` and need `FOUNDRY_PROFILE=examples` (or the `just examples-*` recipes). <!-- variant:full:end -->`just cov` needs [`lcov`](https://github.com/linux-test-project/lcov) (`brew install lcov` on macOS) and uses a `[profile.coverage]` with the optimizer off so instrumentation does not hit "stack too deep". CI also checks gas snapshots and uploads `lcov.info` as a workflow artifact — see the [Testing Guide](lazerTutorial/testing.md) for details.
 
 ## Documentation
 

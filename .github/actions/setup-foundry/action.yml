@@ -40,7 +40,7 @@ runs:
         path: |
           cache
           out
-        key: forge-${{ runner.os }}-${{ env.FOUNDRY_PROFILE || 'default' }}-${{ hashFiles('soldeer.lock', 'foundry.toml', 'src/**/*.sol', 'test/**/*.sol', 'script/**/*.sol') }}
+        key: forge-${{ runner.os }}-${{ env.FOUNDRY_PROFILE || 'default' }}-${{ hashFiles('soldeer.lock', 'foundry.toml', 'src/**/*.sol', 'examples/**/*.sol', 'test/**/*.sol', 'script/**/*.sol') }}
 
     - name: Install dependencies
       shell: bash
