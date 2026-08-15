@@ -16,7 +16,8 @@ permissions:
 
 jobs:
   check:
-    name: Foundry project
+    # Keep this name — the main branch ruleset requires the "Forge Tests" context.
+    name: Forge Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
