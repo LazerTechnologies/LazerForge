@@ -5,14 +5,14 @@ import "forge-std/Script.sol";
 import "../src/BalanceManager.sol";
 
 /**
- * @title DeployScript
+ * @title DeployBalanceManager
  * @notice This script deploys BalanceManager. Simulate running it by entering
- *         `forge script script/Deploy.s.sol --sender <the_caller_address>
- *         --fork-url $GOERLI_RPC_URL -vvvv` in the terminal. To run it for
- *         real, change it to `forge script script/Deploy.s.sol
- *         --fork-url $GOERLI_RPC_URL --broadcast`.
+ *         `forge script script/DeployBalanceManager.s.sol --sender <the_caller_address>
+ *         --fork-url $SEPOLIA_RPC_URL -vvvv` in the terminal. To run it for
+ *         real, change it to `forge script script/DeployBalanceManager.s.sol
+ *         --fork-url $SEPOLIA_RPC_URL --broadcast`.
  */
-contract DeployScript is Script {
+contract DeployBalanceManager is Script {
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         // OpenZeppelin's Ownable rejects the zero address, and BalanceManager now

@@ -2,9 +2,9 @@
 #
 # Generate a variant branch from `main`.
 #
-# Variant branches (`minimal`, and the starters planned in the README) are build
-# artifacts. They are never edited by hand - this script regenerates the whole
-# tree from a manifest, so the two branches cannot drift.
+# Variant branches (`variant/minimal`, and the starters planned in the README)
+# are build artifacts. They are never edited by hand - this script regenerates
+# the whole tree from a manifest, so the branches cannot drift.
 #
 # Usage:
 #   tools/build-variant.sh <variant> [--ref <git-ref>] [--out <dir>] [--push]
@@ -95,20 +95,30 @@ manifest_list() {
 # Both `#` and `//` comment prefixes work, so this applies to TOML and Solidity.
 #
 # A marker must be alone on its line, so a mention inside prose or a URL is not
-# mistaken for one. Markdown is skipped entirely - the docs have to be able to
-# show the syntax in a fenced code block without the build acting on it. Use an
-# overlay file for per-variant documentation instead.
+# mistaken for one.
+#
+# Markdown uses HTML comments instead, `<!-- variant:full:start -->`, so the
+# markers do not render. They are only recognised outside fenced code blocks,
+# which is what lets CONTRIBUTING.md show the syntax without the build acting on
+# it. A region may still wrap a fenced block - put the markers around the fence.
 # ---------------------------------------------------------------------------
 
 readonly MARKER_START='^[[:space:]]*(#|//)[[:space:]]*variant:[A-Za-z0-9_,.-]+:start[[:space:]]*$'
 readonly MARKER_END='^[[:space:]]*(#|//)[[:space:]]*variant:[A-Za-z0-9_,.-]+:end[[:space:]]*$'
+readonly MD_MARKER_START='^[[:space:]]*<!--[[:space:]]*variant:[A-Za-z0-9_,.-]+:start[[:space:]]*-->[[:space:]]*$'
+readonly MD_MARKER_END='^[[:space:]]*<!--[[:space:]]*variant:[A-Za-z0-9_,.-]+:end[[:space:]]*-->[[:space:]]*$'
 
 strip_markers() {
-    local variant="$1" file="$2" tmp
+    local variant="$1" file="$2" tmp is_md=0
     tmp="$(mktemp)"
 
-    awk -v variant="$variant" -v path="$file" \
-        -v re_start="$MARKER_START" -v re_end="$MARKER_END" '
+    local re_start="$MARKER_START" re_end="$MARKER_END"
+    case "$file" in
+        *.md|*.markdown) is_md=1; re_start="$MD_MARKER_START"; re_end="$MD_MARKER_END" ;;
+    esac
+
+    awk -v variant="$variant" -v path="$file" -v is_md="$is_md" \
+        -v re_start="$re_start" -v re_end="$re_end" '
         function fail(msg) {
             printf "error: %s:%d: %s\n", path, NR, msg > "/dev/stderr"
             exit 1
@@ -119,6 +129,17 @@ strip_markers() {
             return s
         }
         {
+            # track fences first, and always, so a region may wrap a whole
+            # fenced block without the toggling getting out of step
+            if (is_md && $0 ~ /^[[:space:]]*(```|~~~)/) {
+                fenced = !fenced
+                if (!in_region || keep) print
+                next
+            }
+            if (is_md && fenced) {
+                if (!in_region || keep) print
+                next
+            }
             if ($0 ~ re_start) {
                 if (in_region) fail("nested variant region")
                 spec = spec_of($0)
@@ -258,7 +279,7 @@ validate_no_dangling_imports() {
         fi
     done < "$removed_file"
 
-    [ "$missing" -eq 0 ] || die "the generated tree still references removed files - add an overlay in variants/<variant>/files/ to replace them"
+    [ "$missing" -eq 0 ] || die "the generated tree still references removed files - remove the referring file too, or wrap the reference in a variant marker region"
 }
 
 # ---------------------------------------------------------------------------
@@ -373,9 +394,6 @@ log "removed $removed_count path(s)"
 
 stripped_count=0
 while IFS= read -r file; do
-    # documentation has to be able to quote the marker syntax without the build
-    # acting on it; per-variant docs go through the overlay instead
-    case "$file" in *.md|*.markdown) continue ;; esac
     # skip anything that is not text
     if ! grep -Iq . "$file" 2>/dev/null; then continue; fi
 
@@ -389,9 +407,10 @@ while IFS= read -r file; do
 done < <(find "$OUT" -type f -not -path "$OUT/.git/*")
 log "stripped variant regions from $stripped_count file(s)"
 
-# A marker nobody strips is a marker that silently does nothing, so flag any in
-# Markdown. Fenced code blocks are exempt - that is how the docs show the syntax.
-md_markers="$(
+# Markdown needs the HTML-comment form. A `#`-prefixed marker there is a heading
+# that silently does nothing, so flag it rather than leaving it to be discovered
+# in the published branch. Fenced blocks are exempt - the docs show the syntax.
+stray_markers="$(
     while IFS= read -r file; do
         awk -v re_start="$MARKER_START" -v path="${file#"$OUT"/}" '
             /^[[:space:]]*(```|~~~)/ { fenced = !fenced; next }
@@ -399,18 +418,9 @@ md_markers="$(
         ' "$file"
     done < <(find "$OUT" -type f \( -name '*.md' -o -name '*.markdown' \) -not -path "$OUT/.git/*")
 )"
-if [ -n "$md_markers" ]; then
-    warn "variant markers in Markdown are never processed:"
-    printf '%s\n' "$md_markers" >&2
-fi
-
-# --- apply overlay -----------------------------------------------------------
-
-OVERLAY="$REPO_ROOT/variants/$VARIANT/files"
-if [ -d "$OVERLAY" ]; then
-    overlay_count="$(find "$OVERLAY" -type f | wc -l | tr -d ' ')"
-    tar -C "$OVERLAY" -cf - . | tar -x -C "$OUT"
-    log "applied $overlay_count overlay file(s)"
+if [ -n "$stray_markers" ]; then
+    warn "Markdown markers must use the <!-- variant:...:start --> form:"
+    printf '%s\n' "$stray_markers" >&2
 fi
 
 # --- prune generated metadata ------------------------------------------------

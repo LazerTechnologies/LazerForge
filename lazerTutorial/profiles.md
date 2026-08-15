@@ -102,7 +102,7 @@ FOUNDRY_PROFILE=gas forge build
 FOUNDRY_PROFILE=ci forge test
 
 # Deploy with via-IR
-FOUNDRY_PROFILE=via_ir forge script script/Deploy.s.sol:DeployScript
+FOUNDRY_PROFILE=via_ir forge script script/DeployBalanceManager.s.sol:DeployBalanceManager
 ```
 
 ### 2. For an entire shell session
@@ -120,10 +120,10 @@ When deploying contracts:
 
 ```bash
 # Deploy with gas optimization
-FOUNDRY_PROFILE=gas forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
 
 # Deploy with via-IR for complex contracts
-FOUNDRY_PROFILE=via_ir forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
+FOUNDRY_PROFILE=via_ir forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
 ```
 
 ## Common Use Cases
@@ -153,10 +153,10 @@ FOUNDRY_PROFILE=ci forge test
 
 ```bash
 # Standard deployment
-forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
+forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
 
 # Gas-optimized deployment
-FOUNDRY_PROFILE=gas forge script script/Deploy.s.sol:DeployScript --rpc-url $RPC_URL
+FOUNDRY_PROFILE=gas forge script script/DeployBalanceManager.s.sol:DeployBalanceManager --rpc-url $RPC_URL
 ```
 
 ## Creating Your Own Profiles
