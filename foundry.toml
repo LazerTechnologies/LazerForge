@@ -1,7 +1,10 @@
 [profile.default]
 # update solc values if needed for compatability with older contracts
 auto_detect_solc = false
-solc = '0.8.28'
+solc = '0.8.36'
+# pin the EVM version explicitly rather than inheriting whatever the installed
+# forge version defaults to, so builds stay reproducible across toolchains
+evm_version = 'prague'
 src = "src"
 out = "out"
 libs = ["lib"]
@@ -32,20 +35,25 @@ bytecode_hash = 'none'
 cbor_metadata = false
 # grant access to read via_ir-out by default, if necessary
 fs_permissions = [{ access = "read", path = "./via_ir-out" }]
-# etherscan currently does not support contracts with more than 10 million optimizer runs;
-# bytecode is typically unaffected past ~1 million runs anyway
-optimizer_runs = 99_999_999
+# etherscan does not support verifying contracts compiled with more than 10 million
+# optimizer runs, so stay under that ceiling. Bytecode is typically unaffected past
+# ~1 million runs anyway. Lower this if you are near the 24KB contract size limit.
+optimizer = true
+optimizer_runs = 9_999_999
 
 [rpc_endpoints]
 sepolia = "${SEPOLIA_RPC_URL}"
 mainnet = "${ETHEREUM_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+anvil = "http://127.0.0.1:8545"
 
+# every network with an [rpc_endpoints] entry needs a matching entry here to verify
 [etherscan]
-ethereum = { key = "${ETHERSCAN_API_KEY}"}
-base = { key = "${BASESCAN_API_KEY}"}
-base_sepolia = { key = "${BASESCAN_API_KEY}"}
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}" }
+base_sepolia = { key = "${BASESCAN_API_KEY}" }
 anvil = { key = "" }
 
 # via_ir pipeline is very slow - use a separate profile to pre-compile and then use vm.getCode to deploy
@@ -56,8 +64,10 @@ test = 'src'
 out = 'via_ir-out'
 
 # offload bulk of fuzz runs to CI
-[profile.CI.fuzz]
-fuzz_runs = 1024
+# NOTE: profile names are matched case-sensitively, keep this lowercase to match
+# the FOUNDRY_PROFILE value set by the GitHub Actions workflows
+[profile.ci.fuzz]
+runs = 1024
 
 [profile.ffi]
 ffi = true
@@ -75,9 +85,8 @@ optimizer = true
 optimizer_runs = 1000000
 via_ir = true
 
-# Local anvil profile
+# Local anvil profile - faster compiles for the local iterate/deploy loop
 [profile.anvil]
-evm_version = 'prague'
 optimizer = true
 optimizer_runs = 500_000
 
@@ -88,23 +97,23 @@ optimizer_runs = 500_000
 [profile.anvil.fuzz]
 runs = 64
 
-# Broadcast configuration - write to ./broadcast by default on scripts
-[profile.anvil.broadcast]
-retries = 10
-retries_delay_ms = 500
+# NOTE: there is no broadcast-retry config key. `broadcast` is a path string (the
+# output directory), so it cannot take a table. Verification attempts are tuned with
+# CLI flags instead:
+#   forge script script/Deploy.s.sol --rpc-url anvil --broadcast --retries 10 --delay 5
 
 # If you use forked anvil often, set a default fork here (optional)
 # [profile.anvil.rpc_storage_caching]
 # chains = ["anvil"]
 
-# Permissions for scripts that need artifacts/IO locally (inherits your default, add more if needed)
-[profile.anvil.fs_permissions]
-# carry over the via_ir read permission
-# additional example:
-# { access = "read-write", path = "./broadcast" }
+# Extra IO permissions for local scripts. `fs_permissions` is an array of tables and
+# fully replaces the default profile's value, so repeat any entries you still need:
+# fs_permissions = [
+#     { access = "read", path = "./via_ir-out" },
+#     { access = "read-write", path = "./broadcast" },
+# ]
 
-# Gas reporting locally (optional)
-[profile.anvil.gas_reports]
-# contracts = ["MyContract","AnotherContract"]
+# Gas reporting locally (optional). `gas_reports` is an array of contract names:
+# gas_reports = ["MyContract", "AnotherContract"]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

@@ -77,7 +77,7 @@ contract InflationTokenTest is Test {
     function test_recoverTokens() public {
         vm.warp(block.timestamp + 365 days);
         _token.mint(_owner);
-        _token.transfer(address(_token), _token.MINT_CAP());
+        assertTrue(_token.transfer(address(_token), _token.MINT_CAP()), "transfer to token contract failed");
 
         uint256 contractBalanceBefore = _token.balanceOf(address(_token));
         console.log("Contract balance before recovery:", contractBalanceBefore);
@@ -121,7 +121,7 @@ contract InflationTokenTest is Test {
         console.log("Testing Token Transfers");
         uint256 ownerBalanceBefore = _token.balanceOf(_owner);
         console.log("Owner balance before transfer:", ownerBalanceBefore);
-        _token.transfer(_user, 100);
+        assertTrue(_token.transfer(_user, 100), "transfer to user failed");
         console.log("Transferred 100 tokens to user");
         assertEq(_token.balanceOf(_user), 100);
         console.log("User balance after transfer:", _token.balanceOf(_user));

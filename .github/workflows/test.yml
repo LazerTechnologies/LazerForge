@@ -7,11 +7,12 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+# matches the [profile.ci] section in foundry.toml (profile names are case-sensitive)
 env:
   FOUNDRY_PROFILE: ci
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   check:
@@ -21,25 +22,24 @@ jobs:
     name: Foundry project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
           submodules: recursive
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly
+          # pinned rather than `nightly` so CI matches the reproducible-build claim
+          version: v1.7.1
 
       - name: Run Forge build
+        id: build
         run: |
           forge --version
           forge build --sizes
-        id: build
-        # don't fail if contract sizes are too large; tests will fail next if compilation failed
+        # don't fail on oversized contracts; tests below still catch build errors
         continue-on-error: true
 
       - name: Run Forge tests
-        run: |
-          FOUNDRY_PROFILE=CI forge test -vvv
         id: test
+        run: forge test -vvv

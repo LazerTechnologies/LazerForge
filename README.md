@@ -48,7 +48,7 @@ forge init --template lazertechnologies/lazerforge --branch minimal <project_nam
 - Stablecoin Starter: 🚧 coming soon
 - Cross-Chain starter: 🚧 coming soon
 
-1. Build the project:
+3. Build the project:
 
 ```bash
 forge build
