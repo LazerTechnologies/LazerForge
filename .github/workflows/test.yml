@@ -37,7 +37,11 @@ jobs:
         id: test
         run: forge test -vvv
 
-  # variant:full:start
+  # These jobs are a no-op on any tree without examples/ - a generated variant
+  # branch, or a consumer who deleted the demos. They are guarded at runtime
+  # rather than stripped by a variant marker on purpose: GITHUB_TOKEN cannot
+  # push workflow files that differ from the ones on main, so the variant build
+  # can only publish while these files stay byte-identical. See #50.
   examples:
     name: Examples
     runs-on: ubuntu-latest
@@ -55,10 +59,14 @@ jobs:
       # the contracts big enough to approach the 24KB limit all live here, so
       # this is where the size check earns its keep
       - name: Build examples
-        run: forge build --sizes
+        run: |
+          if [ ! -d examples ]; then echo "no examples/ in this tree - skipping"; exit 0; fi
+          forge build --sizes
 
       - name: Test examples
-        run: forge test -vvv
+        run: |
+          if [ ! -d examples ]; then echo "no examples/ in this tree - skipping"; exit 0; fi
+          forge test -vvv
 
   gas:
     name: Gas snapshot
@@ -75,8 +83,9 @@ jobs:
       # inputs, so they cannot gate PRs. Update the committed snapshot with
       # the same filter after a gas-affecting change.
       - name: Check gas snapshot
-        run: forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
-  # variant:full:end
+        run: |
+          if [ ! -d examples ]; then echo "no examples/ in this tree - skipping"; exit 0; fi
+          forge snapshot --check --nmt 'test_fuzz|testFuzz|invariant'
 
   coverage:
     name: Coverage

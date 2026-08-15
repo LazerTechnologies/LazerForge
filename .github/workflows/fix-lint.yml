@@ -57,9 +57,9 @@ jobs:
           set -euo pipefail
 
           forge fmt
-          # variant:full:start
-          FOUNDRY_PROFILE=examples forge fmt
-          # variant:full:end
+          if [ -d examples ]; then
+            FOUNDRY_PROFILE=examples forge fmt
+          fi
 
           if git diff --quiet; then
             echo "::notice::Formatting is already correct, nothing to fix."
