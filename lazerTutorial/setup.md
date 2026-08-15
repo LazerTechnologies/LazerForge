@@ -77,15 +77,17 @@ LazerForge comes pre-configured with VSCode settings:
 ## Project Structure
 
 ```bash
-├── src/                        # example contracts
-│   └── utils/                  # utility contracts
-├── test/                       # test files
-├── script/                     # example scripts
+├── src/                        # your contracts (starts as Counter)
+├── test/                       # your tests
+├── script/                     # your deploy scripts
+├── examples/                   # demo contracts (BalanceManager, …)
 ├── .github/                    # GitHub Actions workflows
 ├── lazerTutorial/              # LazerForge tutorial
 ├── justfile                    # common forge recipes (`just --list`)
 └── foundry.toml                # foundry config
 ```
+
+Build and test the demos with `FOUNDRY_PROFILE=examples` (or `just examples-build` / `just examples-test`). The default profile only compiles `src/`.
 
 ## Dependencies
 

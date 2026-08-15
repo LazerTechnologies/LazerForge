@@ -21,14 +21,11 @@ remove:
   # tutorials are the bulk of what `minimal` exists to leave out
   - lazerTutorial/
 
-  # example contracts, their tests, and their deploy scripts. InflationToken
-  # stays as the one worked example; BalanceManager and Rescue are the
-  # "extensive examples" minimal drops
-  - src/BalanceManager.sol
-  - src/utils/Rescue.sol
-  - test/BalanceManager.t.sol
-  - script/DeployBalanceManager.s.sol
-  - script/CrossChainDeploy.s.sol
+  # all demo contracts, their tests, and their deploy scripts
+  - examples/
+  - test/examples/
+  - script/examples/
+  - .gas-snapshot
 
   # the variant machinery itself. Generated branches must not carry the tooling
   # that generates them, or a contributor could try to build variants from one

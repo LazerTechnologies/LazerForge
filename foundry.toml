@@ -8,6 +8,13 @@ evm_version = 'prague'
 src = "src"
 out = "out"
 libs = ["dependencies"]
+# variant:full:start
+# Demo contracts live under examples/ and are built with FOUNDRY_PROFILE=examples.
+# Skip their nested tests/scripts so the default profile only compiles src/.
+# NOTE: `skip` also hides these paths from `forge fmt` and `forge lint`, so CI
+# runs both under the default profile and again under `examples`.
+skip = ["*/examples/*"]
+# variant:full:end
 # Resolve imports only through the explicit list below. Left on, forge also infers
 # remappings by walking `dependencies/`, which picks up the empty submodule stubs
 # inside the Uniswap v4 checkouts and shadows the real packages.
@@ -79,6 +86,22 @@ via_ir = true
 test = 'src'
 out = 'via_ir-out'
 
+# variant:full:start
+# Example contracts, their tests, and their deploy scripts. Clear `skip` so the
+# nested paths under test/ and script/ are visible to this profile.
+[profile.examples]
+src = "examples"
+test = "test/examples"
+script = "script/examples"
+skip = []
+
+# The repo's only fuzz tests live in examples/, so the CI fuzz campaign has to
+# be configured here as well as in [profile.ci.fuzz]. CI raises this via
+# FOUNDRY_FUZZ_RUNS; keep the local default low so `just examples-test` is quick.
+[profile.examples.fuzz]
+runs = 256
+# variant:full:end
+
 # offload bulk of fuzz runs to CI
 # NOTE: profile names are matched case-sensitively, keep this lowercase to match
 # the FOUNDRY_PROFILE value set by the GitHub Actions workflows
@@ -129,7 +152,7 @@ runs = 64
 # NOTE: there is no broadcast-retry config key. `broadcast` is a path string (the
 # output directory), so it cannot take a table. Verification attempts are tuned with
 # CLI flags instead:
-#   forge script script/Deploy.s.sol --rpc-url anvil --broadcast --retries 10 --delay 5
+#   forge script script/DeployCounter.s.sol --rpc-url anvil --broadcast --retries 10 --delay 5
 
 # If you use forked anvil often, set a default fork here (optional)
 # [profile.anvil.rpc_storage_caching]

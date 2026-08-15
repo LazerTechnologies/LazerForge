@@ -2,15 +2,16 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import "../src/BalanceManager.sol";
+import "../../examples/BalanceManager.sol";
 
 /**
  * @title DeployBalanceManager
  * @notice This script deploys BalanceManager. Simulate running it by entering
- *         `forge script script/DeployBalanceManager.s.sol --sender <the_caller_address>
+ *         `forge script script/examples/DeployBalanceManager.s.sol --sender <the_caller_address>
  *         --fork-url $SEPOLIA_RPC_URL -vvvv` in the terminal. To run it for
- *         real, change it to `forge script script/DeployBalanceManager.s.sol
+ *         real, change it to `forge script script/examples/DeployBalanceManager.s.sol
  *         --fork-url $SEPOLIA_RPC_URL --broadcast`.
+ *         Requires FOUNDRY_PROFILE=examples.
  */
 contract DeployBalanceManager is Script {
     function run() public {

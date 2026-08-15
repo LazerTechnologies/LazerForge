@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Script.sol";
 import "forge-std/console.sol";
 import "solady/utils/LibString.sol";
-import "../src/BalanceManager.sol";
+import "../../examples/BalanceManager.sol";
 
 interface ImmutableCreate2Factory {
     function hasBeenDeployed(address deploymentAddress) external view returns (bool);
@@ -23,11 +23,13 @@ interface ImmutableCreate2Factory {
 /**
  * @title CrossChainDeployScript
  * @notice This script deploys a contract to the same address regardless of
- *         which chain it's run on. Simulate running it by entering `forge
- *         script script/CrossChainDeploy.s.sol --tc CrossChainDeployScript
+ *         which chain it's run on. Simulate running it by entering
+ *         `FOUNDRY_PROFILE=examples forge script
+ *         script/examples/CrossChainDeploy.s.sol --tc CrossChainDeployScript
  *         --sender <the_caller_address> --fork-url $GOERLI_RPC_URL -vvvv` in
- *         the terminal. To run it for real, change it to `forge script
- *         script/CrossChainDeploy.s.sol --tc CrossChainDeployScript
+ *         the terminal. To run it for real, change it to
+ *         `FOUNDRY_PROFILE=examples forge script
+ *         script/examples/CrossChainDeploy.s.sol --tc CrossChainDeployScript
  *         --private-key $MY_ACTUAL_PK_BE_CAREFUL --fork-url $GOERLI_RPC_URL
  *         --broadcast`.
  *

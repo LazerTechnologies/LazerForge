@@ -11,6 +11,22 @@ build *args:
 test *args:
     forge test {{args}}
 
+# variant:full:start
+
+# Compile example contracts (BalanceManager, InflationToken, …)
+examples-build *args:
+    FOUNDRY_PROFILE=examples forge build {{args}}
+
+# Run example tests
+examples-test *args:
+    FOUNDRY_PROFILE=examples forge test {{args}}
+
+# Write gas snapshots for the example contracts
+snapshot *args:
+    FOUNDRY_PROFILE=examples forge snapshot {{args}}
+
+# variant:full:end
+
 # Format Solidity
 fmt *args:
     forge fmt {{args}}
@@ -18,10 +34,6 @@ fmt *args:
 # Lint Solidity
 lint *args:
     forge lint {{args}}
-
-# Write gas snapshots
-snapshot *args:
-    forge snapshot {{args}}
 
 # Coverage summary + HTML report (needs `lcov`: `brew install lcov`)
 cov:

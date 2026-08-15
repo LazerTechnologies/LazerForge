@@ -260,6 +260,45 @@ validate_remappings() {
     [ "$stale" -eq 0 ] || die "foundry.toml has remappings for dependencies this variant removed - wrap them in a variant marker region"
 }
 
+# A marker only works alone on its line and, in Markdown, outside a fenced code
+# block. Written any other way it is silently inert: the content it was meant to
+# remove ships, and the raw comment ships with it. That is invisible in review,
+# so catch it here by looking for markers that survived into the output.
+validate_no_residual_markers() {
+    local dir="$1" residue
+
+    residue="$(
+        while IFS= read -r file; do
+            awk -v path="${file#"$dir"/}" '
+                /^[[:space:]]*(```|~~~)/ { fenced = !fenced; next }
+                /<!--[[:space:]]*variant:[A-Za-z0-9_,.-]+:(start|end)[[:space:]]*-->/ {
+                    printf "%s\t%s:%d\n", (fenced ? "fenced" : "inline"), path, NR
+                }
+            ' "$file"
+        done < <(find "$dir" -type f \( -name '*.md' -o -name '*.markdown' \) -not -path "$dir/.git/*")
+    )"
+
+    [ -n "$residue" ] || return 0
+
+    # inside a fence the docs may legitimately be showing the syntax, so warn;
+    # anywhere else the marker was meant to do something and did not
+    local fenced inline
+    fenced="$(printf '%s\n' "$residue" | grep '^fenced' | cut -f2- || true)"
+    inline="$(printf '%s\n' "$residue" | grep '^inline' | cut -f2- || true)"
+
+    if [ -n "$fenced" ]; then
+        warn "variant markers inside fenced code blocks are not processed:"
+        printf '  %s\n' $fenced >&2
+        printf '  %s\n' "if these were meant to strip content, move them outside the fence" >&2
+    fi
+
+    if [ -n "$inline" ]; then
+        warn "variant markers that are not alone on their line do nothing:"
+        printf '  %s\n' $inline >&2
+        die "generated Markdown still contains variant markers - put each marker on its own line, outside any fenced code block"
+    fi
+}
+
 validate_no_dangling_imports() {
     local dir="$1" removed_file="$2" missing=0
     local path base hits
@@ -384,8 +423,15 @@ while IFS= read -r path; do
     if [ ! -e "$target" ]; then
         die "manifest removes '$path', which does not exist in $REF - the manifest is stale"
     fi
+    # record the contracts inside a removed directory, not just the directory.
+    # The dangling-import check works on file names, so a bare directory entry
+    # would silently exempt everything under it from that check.
+    if [ -d "$target" ]; then
+        find "$target" -type f -name '*.sol' | sed "s|^$OUT/||" >> "$REMOVED_LIST"
+    else
+        printf '%s\n' "$path" >> "$REMOVED_LIST"
+    fi
     rm -rf "$target"
-    printf '%s\n' "$path" >> "$REMOVED_LIST"
     removed_count=$((removed_count + 1))
 done < <(manifest_list remove "$MANIFEST")
 log "removed $removed_count path(s)"
@@ -431,6 +477,7 @@ prune_lockfile "$OUT"
 
 validate_remappings "$OUT"
 validate_no_dangling_imports "$OUT" "$REMOVED_LIST"
+validate_no_residual_markers "$OUT"
 log "validation passed"
 
 # --- commit ------------------------------------------------------------------
