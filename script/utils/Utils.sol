@@ -1,38 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Script} from "forge-std/Script.sol";
+import {DeployBase} from "./DeployBase.s.sol";
 
-contract Utils is Script {
+/**
+ * @title Utils
+ * @notice Thin helpers on top of {DeployBase}. Prefer `_writeDeployment` for new
+ *         scripts — these named-file APIs now resolve to `deployments/<chainid>.json`.
+ */
+abstract contract Utils is DeployBase {
     uint256 constant CHAIN_ID_ANVIL_LOCALNET = 31_337;
 
     string constant OUTPUT_ANVIL_LOCALNET = "anvil_localnet";
     string constant OUTPUT_UNKNOWN = "unknown";
 
     function readInput(string memory inputFileName) internal view returns (string memory) {
-        string memory file = getInputPath(inputFileName);
-        return vm.readFile(file);
+        return vm.readFile(getInputPath(inputFileName));
     }
 
     function getInputPath(string memory inputFileName) internal view returns (string memory) {
-        string memory inputDir = string.concat(vm.projectRoot(), "/deployments/");
-        string memory file = string.concat(inputFileName, ".json");
-        return string.concat(inputDir, file);
+        return string.concat(_deploymentsDir(), inputFileName, ".json");
     }
 
-    function readOutput(string memory outputFileName) internal view returns (string memory) {
-        string memory file = getOutputPath(outputFileName);
-        return vm.readFile(file);
+    function readOutput(string memory) internal view returns (string memory) {
+        return vm.readFile(_deploymentsPath());
     }
 
-    function writeOutput(string memory outputJson, string memory outputFileName) internal {
-        string memory outputFilePath = getOutputPath(outputFileName);
-        vm.writeJson(outputJson, outputFilePath);
+    function writeOutput(string memory outputJson, string memory) internal {
+        _ensureDeploymentsDir();
+        vm.writeJson(outputJson, _deploymentsPath());
     }
 
-    function getOutputPath(string memory outputFileName) internal view returns (string memory) {
-        string memory outputDir = string.concat(vm.projectRoot(), "/deployments/");
-        string memory outputFilePath = string.concat(outputDir, outputFileName, ".json");
-        return outputFilePath;
+    function getOutputPath(string memory) internal view returns (string memory) {
+        return _deploymentsPath();
     }
 }

@@ -1,46 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {console} from "forge-std/console.sol";
 import {CREATE3Factory} from "../../examples/CREATE3Factory.sol";
+import {DeployBase} from "../utils/DeployBase.s.sol";
 
-import {Utils} from "../utils/Utils.sol";
-
-contract DeployCREATE3Factory is Utils {
-    CREATE3Factory factory;
-
-    address deployer;
-
+/**
+ * @title DeployCREATE3Factory
+ * @notice Deploys CREATE3Factory (examples profile).
+ *
+ * Preferred (encrypted keystore):
+ *   cast wallet import deployer --interactive
+ *   FOUNDRY_PROFILE=examples forge script script/examples/DeployCREATE3Factory.s.sol \
+ *     --account deployer --rpc-url sepolia --broadcast --verify
+ *
+ * CI / automation: set DEPLOYER_PRIVATE_KEY and omit `--account`.
+ */
+contract DeployCREATE3Factory is DeployBase {
     function run() public {
-        uint256 privateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-        require(privateKey != 0, "DEPLOYER_PRIVATE_KEY not set");
-
-        deployer = vm.addr(privateKey);
-        vm.startBroadcast(privateKey);
-
-        factory = new CREATE3Factory();
+        _startBroadcast();
+        CREATE3Factory factory = new CREATE3Factory();
         require(address(factory) != address(0), "CREATE3Factory deployment failed");
+        _stopBroadcast();
 
-        vm.stopBroadcast();
-
-        _serializeDeploymentData();
-    }
-
-    function _serializeDeploymentData() internal {
-        string memory parent_object = "parent object";
-        string memory addresses = "addresses";
-        string memory constructorArgs = "constructorArgs";
-
-        string memory addressesOutput;
-        addressesOutput = vm.serializeAddress(addresses, "deployer", deployer);
-        addressesOutput = vm.serializeAddress(addresses, "implementation", address(factory));
-
-        string memory constructorArgsOutput;
-
-        string memory finalJson;
-        finalJson = vm.serializeString(parent_object, addresses, addressesOutput);
-        finalJson = vm.serializeString(parent_object, constructorArgs, constructorArgsOutput);
-        finalJson = vm.serializeUint(parent_object, "deploymentBlock", block.number);
-
-        writeOutput(finalJson, "CREATE3Factory");
+        _writeDeployment("CREATE3Factory", address(factory));
+        console.log("CREATE3Factory deployed at:", address(factory));
     }
 }

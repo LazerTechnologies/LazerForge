@@ -72,6 +72,15 @@ Structure the repo so this is usually enough. Demo contracts live under `example
 
 The name list is comma separated (`# variant:full,defi:start` keeps the region for both), and the marker lines are always stripped from generated output. Both `#` and `//` prefixes work, so this covers Solidity as well as TOML. A marker has to be alone on its line, so mentioning one in prose does nothing.
 
+Do **not** put marker regions in `.github/workflows/` files. Variant stripping
+would produce workflow contents that do not already exist on another branch, and
+`GITHUB_TOKEN` cannot push those (GitHub requires the `workflow` scope for unique
+workflow content). Keep shared workflows identical on every branch. Put examples-only
+jobs in their own workflow and add that path to the variant's `remove:` list (see
+`.github/workflows/examples.yml`). Inside a shared `run:` script, `[ -d examples ]`
+is fine — that is shell, not a job-level expression (`hashFiles` is not available in
+`jobs.<id>.if`).
+
 Markdown uses an HTML comment instead, so the marker does not render:
 
 ```markdown

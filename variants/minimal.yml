@@ -32,3 +32,5 @@ remove:
   - variants/
   - tools/
   - .github/workflows/build-variants.yml
+  # examples CI — no examples/ tree on this variant
+  - .github/workflows/examples.yml

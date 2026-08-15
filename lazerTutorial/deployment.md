@@ -40,55 +40,65 @@ forge soldeer install
 forge build
 ```
 
-Fill in necessary environment variables for the network you are deploying on. It's good practice to always deploy first to a testnet like Sepolia before deploying to a non-test network.
+Fill in the RPC URL (and any explorer API keys) for the network you are deploying on. It's good practice to always deploy first to a testnet like Sepolia before deploying to a non-test network.
 
 ```bash
 SEPOLIA_RPC_URL='https://eth-sepolia.g.alchemy.com/v2/demo'
-DEPLOYER_PRIVATE_KEY='<your_pk>'
 ```
 
-⚠️ **Follow proper `.env` and `.gitignore` practices to prevent leaked keys.**
+## Secure key handling (default: encrypted keystore)
+
+**Do not put private keys in `.env` for anything that holds real funds.** Import an encrypted keystore once, then pass it with `--account`:
+
+```bash
+cast wallet import deployer --interactive
+forge script script/DeployCounter.s.sol --account deployer --rpc-url sepolia --broadcast --verify
+```
+
+`cast wallet import` stores the key encrypted on disk under Foundry's keystore directory. `--account deployer` unlocks it for that run (you will be prompted for the password). Scripts in this template call `vm.startBroadcast()` with no key when `DEPLOYER_PRIVATE_KEY` is unset, so the CLI account is what signs.
+
+Deploy scripts also write the resulting address to `deployments/<chainid>.json` so later runs do not depend only on `broadcast/` logs.
+
+Demo contracts under `examples/` use the same helpers via `script/examples/` and need `FOUNDRY_PROFILE=examples` (or `just examples-build`).
+
+### CI / automation only: environment private key
+
+Headless pipelines that cannot unlock a keystore may set `DEPLOYER_PRIVATE_KEY` instead. Treat that as a CI secret, never as the default local workflow:
+
+```bash
+export DEPLOYER_PRIVATE_KEY='<ci_deployer_key>'
+forge script script/DeployCounter.s.sol --rpc-url sepolia --broadcast --verify
+```
+
+⚠️ **Follow proper `.env` and `.gitignore` practices. Never commit a real private key.**
 
 ## Deployment Scripts
 
-Deployments are handled through script files, written in Solidity and using the naming convention `Contract.s.sol`. You can run a script directly from your CLI
+Deployments are handled through script files, written in Solidity and using the naming convention `Contract.s.sol`. Shared broadcast, CREATE2, and deployment-record helpers live in `script/utils/DeployBase.s.sol` — extend that rather than reimplementing signing or JSON output.
+
+You can run a script directly from your CLI:
 
 ```bash
-forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> --private-key <your_private_key> --chain-id <chain_id> -vv
+forge script script/DeployCounter.s.sol --account deployer --rpc-url sepolia -vv
 ```
 
-> 💡 It is best practice to keep all scripts related to a contract in a single script file, for example `MyToken` may have functions to `Deploy` and `Mint`. You can run a single function by appending the file name in the previous script like this `forge script script/MyScript.s.sol:MyFunction`.
+> 💡 It is best practice to keep all scripts related to a contract in a single script file, for example `MyToken` may have functions to `Deploy` and `Mint`. You can run a single function by appending the contract name like this: `forge script script/MyScript.s.sol:MyFunction`.
 
-Unless you include the `--broadcast` argument, the script will be run in a simulated environment. If you need to run the script live, use the `--broadcast` arg
+Unless you include the `--broadcast` argument, the script will be run in a simulated environment. If you need to run the script live, use the `--broadcast` arg.
 
 ⚠️ **Using `--broadcast` will initiate an onchain transaction, only use after thoroughly testing**
 
 ### Broadcast
 
 ```bash
-forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> --private-key <your_private_key> --chain-id 1 -vv --broadcast
+forge script script/DeployCounter.s.sol --account deployer --rpc-url sepolia -vv --broadcast
 ```
 
-Additional arguments can specify the chain and verbosity of the script
+Additional arguments can specify verbosity and verification:
 
 ```bash
-forge script script/MyContract.s.sol:MyContractScript --rpc-url <your_rpc_url> --private-key <your_private_key> --chain-id 1 -vv
+forge script script/DeployCounter.s.sol --account deployer --rpc-url sepolia -vv --broadcast --verify
 ```
-
-## Secure Private Key Handling
-
-You can make a private key available to a script directly to prevent exposing it in the command line (recommended).
-
-⚠️ **NEVER place your private key in a script in plaintext, always use environment variables!**
-
-```js
-function run() public {
-    vm.startBroadcast(vm.envUint('PRIVATE_KEY'));
-    // rest of your code...
-}
-```
-
-Then run the `forge script` command without the private key arg.
 
 💡 **When deploying a new contract, you can use the `--verify` arg to verify the contract on deployment.**
 
