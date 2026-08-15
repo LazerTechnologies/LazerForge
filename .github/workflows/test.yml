@@ -43,13 +43,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FOUNDRY_PROFILE: examples
+      # A job-level profile replaces `ci`, so [profile.ci.fuzz] no longer applies
+      # here - and the repo's only fuzz tests are in examples/. Set the campaign
+      # size directly so CI keeps running it at full depth.
+      FOUNDRY_FUZZ_RUNS: 1024
     steps:
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/setup-foundry
 
+      # the contracts big enough to approach the 24KB limit all live here, so
+      # this is where the size check earns its keep
       - name: Build examples
-        run: forge build
+        run: forge build --sizes
 
       - name: Test examples
         run: forge test -vvv

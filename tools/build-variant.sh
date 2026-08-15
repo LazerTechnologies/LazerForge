@@ -423,8 +423,15 @@ while IFS= read -r path; do
     if [ ! -e "$target" ]; then
         die "manifest removes '$path', which does not exist in $REF - the manifest is stale"
     fi
+    # record the contracts inside a removed directory, not just the directory.
+    # The dangling-import check works on file names, so a bare directory entry
+    # would silently exempt everything under it from that check.
+    if [ -d "$target" ]; then
+        find "$target" -type f -name '*.sol' | sed "s|^$OUT/||" >> "$REMOVED_LIST"
+    else
+        printf '%s\n' "$path" >> "$REMOVED_LIST"
+    fi
     rm -rf "$target"
-    printf '%s\n' "$path" >> "$REMOVED_LIST"
     removed_count=$((removed_count + 1))
 done < <(manifest_list remove "$MANIFEST")
 log "removed $removed_count path(s)"

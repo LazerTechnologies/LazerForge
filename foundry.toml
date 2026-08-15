@@ -8,9 +8,11 @@ evm_version = 'prague'
 src = "src"
 out = "out"
 libs = ["dependencies"]
+# variant:full:start
 # Demo contracts live under examples/ and are built with FOUNDRY_PROFILE=examples.
 # Skip their nested tests/scripts so the default profile only compiles src/.
-# variant:full:start
+# NOTE: `skip` also hides these paths from `forge fmt` and `forge lint`, so CI
+# runs both under the default profile and again under `examples`.
 skip = ["*/examples/*"]
 # variant:full:end
 # Resolve imports only through the explicit list below. Left on, forge also infers
@@ -84,14 +86,20 @@ via_ir = true
 test = 'src'
 out = 'via_ir-out'
 
+# variant:full:start
 # Example contracts, their tests, and their deploy scripts. Clear `skip` so the
 # nested paths under test/ and script/ are visible to this profile.
-# variant:full:start
 [profile.examples]
 src = "examples"
 test = "test/examples"
 script = "script/examples"
 skip = []
+
+# The repo's only fuzz tests live in examples/, so the CI fuzz campaign has to
+# be configured here as well as in [profile.ci.fuzz]. CI raises this via
+# FOUNDRY_FUZZ_RUNS; keep the local default low so `just examples-test` is quick.
+[profile.examples.fuzz]
+runs = 256
 # variant:full:end
 
 # offload bulk of fuzz runs to CI
