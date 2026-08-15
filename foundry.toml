@@ -99,6 +99,11 @@ optimizer = true
 optimizer_runs = 1000000
 via_ir = true
 
+# Coverage instrumentation fights the default 9_999_999 optimizer runs and can
+# hit "stack too deep". `just cov` sets FOUNDRY_PROFILE=coverage to use this.
+[profile.coverage]
+optimizer = false
+
 # Local anvil profile - faster compiles for the local iterate/deploy loop
 [profile.anvil]
 optimizer = true

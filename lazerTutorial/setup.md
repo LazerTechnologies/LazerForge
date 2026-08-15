@@ -9,6 +9,7 @@ Before starting with LazerForge, make sure you have the following installed:
 1. Git
 2. Node.js (for development tools)
 3. Code editor (VSCode + Solidity extension recommended)
+4. [`just`](https://github.com/casey/just#installation) (optional — `just --list` runs the common Foundry recipes in the `justfile`)
 
 ## Installation
 
@@ -82,6 +83,7 @@ LazerForge comes pre-configured with VSCode settings:
 ├── script/                     # example scripts
 ├── .github/                    # GitHub Actions workflows
 ├── lazerTutorial/              # LazerForge tutorial
+├── justfile                    # common forge recipes (`just --list`)
 └── foundry.toml                # foundry config
 ```
 
