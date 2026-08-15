@@ -3,6 +3,10 @@ cache/
 out/
 via_ir-out/
 
+# Soldeer dependencies. Only the manifest in foundry.toml and soldeer.lock are
+# tracked - run `forge soldeer install` to restore this directory.
+/dependencies/
+
 # Ignores development broadcast logs
 broadcast/*
 !/broadcast

@@ -7,24 +7,41 @@ solc = '0.8.36'
 evm_version = 'prague'
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["dependencies"]
+# Resolve imports only through the explicit list below. Left on, forge also infers
+# remappings by walking `dependencies/`, which picks up the empty submodule stubs
+# inside the Uniswap v4 checkouts and shadows the real packages.
+auto_detect_remappings = false
+# Dependencies live in `dependencies/<name>-<version>/`, so these paths carry the
+# version. Bump them alongside the matching entry in [dependencies] below.
 remappings = [
-    'forge-std/=lib/forge-std/src',
-    'solady/=lib/solady/src/',
-    'solady-test/=lib/solady/test/',
-    '@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
-    'openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/',
-    'openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/',
-    '@uniswap/v2-core/=lib/uniswap/v2-core/contracts/',
-    '@uniswap/v3-core/=lib/uniswap/v3-core/contracts/',
-    '@uniswap/v3-periphery/=lib/uniswap/v3-periphery/contracts/',
-    '@uniswap/v4-core/=lib/uniswap/v4-core/src/',
-    '@uniswap/v4-periphery/=lib/uniswap/v4-periphery/src/',
-    'uniswap-v2-core/=lib/uniswap/v2-core/contracts/',
-    'uniswap-v3-core/=lib/uniswap/v3-core/contracts/',
-    'uniswap-v3-periphery/=lib/uniswap/v3-periphery/contracts/',
-    'uniswap-v4-core/=lib/uniswap/v4-core/src/',
-    'uniswap-v4-periphery/=lib/uniswap/v4-periphery/src/'
+    'forge-std/=dependencies/forge-std-1.16.2/src/',
+    'solady/=dependencies/solady-0.0.107/src/',
+    # the published @openzeppelin-contracts package is flattened - the contracts sit
+    # at the package root, not under a contracts/ subdirectory like the git repo
+    '@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
+    'openzeppelin-contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
+    'openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
+    # The Uniswap aliases resolve to the package root, not to contracts/ or src/.
+    # These packages import each other by their full published path (v3-periphery
+    # does `import '@uniswap/v3-core/contracts/...'`), so mapping the alias any
+    # deeper makes the libraries fail to resolve their own imports. Import them the
+    # same way Uniswap's docs do:
+    #   import {IUniswapV3Pool} from '@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol';
+    #   import {IPoolManager} from '@uniswap/v4-core/src/interfaces/IPoolManager.sol';
+    '@uniswap/v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
+    '@uniswap/v3-core/=dependencies/@uniswap-v3-core-1.0.1/',
+    '@uniswap/v3-periphery/=dependencies/@uniswap-v3-periphery-1.4.4/',
+    '@uniswap/v4-core/=dependencies/uniswap-v4-core-1.0.1/',
+    '@uniswap/v4-periphery/=dependencies/uniswap-v4-periphery-1.0.1/',
+    'uniswap-v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
+    'uniswap-v3-core/=dependencies/@uniswap-v3-core-1.0.1/',
+    'uniswap-v3-periphery/=dependencies/@uniswap-v3-periphery-1.4.4/',
+    'uniswap-v4-core/=dependencies/uniswap-v4-core-1.0.1/',
+    'uniswap-v4-periphery/=dependencies/uniswap-v4-periphery-1.0.1/',
+    # v4-periphery imports Permit2 by this alias, so it has to resolve for anything
+    # under @uniswap/v4-periphery/ to compile
+    'permit2/=dependencies/permit2-1.0.0/'
 ]
 # ensure that block number + timestamp are realistic when running tests
 block_number = 17722462
@@ -117,3 +134,28 @@ runs = 64
 # gas_reports = ["MyContract", "AnotherContract"]
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
+
+[soldeer]
+# Remappings are maintained by hand in [profile.default] above so the template can
+# keep its import aliases (`@openzeppelin/contracts/`, `openzeppelin/contracts/`,
+# ...). Letting Soldeer generate them would overwrite that list with one entry per
+# dependency and break every existing import.
+remappings_generate = false
+
+# Managed with `forge soldeer`. Add with `forge soldeer install <name>~<version>`,
+# drop with `forge soldeer uninstall <name>`, then update the remappings above.
+# Exact versions and content hashes are recorded in soldeer.lock.
+[dependencies]
+forge-std = "1.16.2"
+solady = "0.0.107"
+"@openzeppelin-contracts" = "4.9.2"
+"@uniswap-v2-core" = "1.0.1"
+"@uniswap-v3-core" = "1.0.1"
+"@uniswap-v3-periphery" = "1.4.4"
+# Uniswap v4 is not published to the Soldeer registry, so these come straight from
+# the official repos, pinned to the commits tagged 1.0.1 on npm.
+uniswap-v4-core = { version = "1.0.1", git = "https://github.com/Uniswap/v4-core.git", rev = "80311e34080fee64b6fc6c916e9a51a437d0e482" }
+uniswap-v4-periphery = { version = "1.0.1", git = "https://github.com/Uniswap/v4-periphery.git", rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d" }
+# transitive dependency of v4-periphery, pinned to the commit tagged with the
+# canonical deployment address 0x000000000022D473030F116dDEE9F6B43aC78BA3
+permit2 = { version = "1.0.0", git = "https://github.com/Uniswap/permit2.git", rev = "cc306b601f172c51bc04334a109e98340456620b" }

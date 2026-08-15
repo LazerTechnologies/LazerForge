@@ -34,6 +34,12 @@ forge init --template lazertechnologies/lazerforge --branch minimal <project_nam
 3. Install dependencies:
 
 ```bash
+forge soldeer install
+```
+
+4. Compile the contracts:
+
+```bash
 forge build
 ```
 
@@ -80,6 +86,8 @@ LazerForge comes pre-configured with VSCode settings:
 ```
 
 ## Dependencies
+
+Dependencies are managed with [Soldeer](https://soldeer.xyz) rather than git submodules. They are declared in the `[dependencies]` section of `foundry.toml`, pinned by version and content hash in `soldeer.lock`, and downloaded into a git-ignored `dependencies/` directory by `forge soldeer install`.
 
 LazerForge comes with some common dependencies out of the box:
 

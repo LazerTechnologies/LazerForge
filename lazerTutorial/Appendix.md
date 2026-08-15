@@ -6,11 +6,7 @@ alias fb="forge build"
 alias fc="forge clean"
 alias ff="forge fmt"
 alias ft="forge test -vvv"
-
-reinit() {
-    git submodule deinit -f .
-    git submodule update --init --recursive
-}
+alias fi="forge soldeer install"
 ```
 
 ## Notes

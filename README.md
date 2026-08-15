@@ -9,6 +9,7 @@ LazerForge is a Foundry template for smart contract development. For more inform
 LazerForge is a batteries included template with the following configurations:
 
 - [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts), [Solady](https://github.com/Vectorized/solady), and the full Uniswap suite ([v2](https://github.com/uniswap/v2-core), [v3-core](https://github.com/uniswap/v3-core) & [v3-periphery](https://github.com/uniswap/v3-periphery), [v4-core](https://github.com/uniswap/v4-core) & [v4-periphery](https://github.com/uniswap/v4-periphery)) smart contracts are included as dependencies along with [`solc` remappings](https://docs.soliditylang.org/en/latest/path-resolution.html#import-remapping) so you can work with a wide range of deployed contracts out of the box!
+- Dependencies managed with [Soldeer](https://soldeer.xyz) — declared in `foundry.toml` and version-locked in `soldeer.lock`, so they can be added, removed, and upgraded with a single command
 - `forge fmt` configured as the default formatter for VSCode projects
 - Github Actions workflows that run `forge fmt --check` and `forge test` on every push and PR
   - A separate action to automatically fix formatting issues on PRs by commenting `!fix` on the PR
@@ -48,7 +49,13 @@ forge init --template lazertechnologies/lazerforge --branch minimal <project_nam
 - Stablecoin Starter: 🚧 coming soon
 - Cross-Chain starter: 🚧 coming soon
 
-3. Build the project:
+3. Install dependencies:
+
+```bash
+forge soldeer install
+```
+
+4. Build the project:
 
 ```bash
 forge build
@@ -65,12 +72,31 @@ For detailed info on branches and contribution, check out the [Contributing Guid
 
 > See [sync script usage](CONTRIBUTING.md#syncing-changes-between-branches) for automating branch sync.
 
-## Reinitialize Submodules
+## Dependencies
 
-When working across branches with different dependencies, submodules may need to be reinitialized. Run
+Dependencies are managed with [Soldeer](https://soldeer.xyz). They are declared in the `[dependencies]` section of `foundry.toml` and pinned by version and content hash in `soldeer.lock`. The `dependencies/` directory itself is generated and git-ignored, so a fresh clone needs one command before it will build:
 
 ```bash
-./reinit-submodules
+forge soldeer install
+```
+
+Run the same command after pulling changes that touch `foundry.toml`, or after switching branches.
+
+To add, remove, or upgrade a dependency:
+
+```bash
+forge soldeer install <name>~<version>   # add
+forge soldeer uninstall <name>           # remove
+forge soldeer update                     # upgrade within declared ranges
+```
+
+Remappings are maintained by hand in `foundry.toml` rather than generated, so the template can keep import aliases like `@openzeppelin/contracts/`. The paths include the version number — update the matching remapping whenever you change a dependency's version.
+
+The Uniswap aliases resolve to the package root, matching the import paths in Uniswap's own documentation. These packages import each other by their full published path, so the alias cannot point any deeper:
+
+```solidity
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 ```
 
 ## Gas Snapshots

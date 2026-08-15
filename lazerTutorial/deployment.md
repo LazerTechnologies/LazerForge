@@ -36,6 +36,7 @@ forge init --template lazertechnologies/lazerforge
 Install dependencies and compile the contracts:
 
 ```bash
+forge soldeer install
 forge build
 ```
 
