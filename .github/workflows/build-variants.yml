@@ -1,0 +1,146 @@
+name: Build Variant Branches
+
+# Variant branches (`variant/minimal`, and the starters planned in the README)
+# are build artifacts of `main`. This workflow regenerates them, compiles and
+# tests the generated tree, and publishes it only if that passes - so the
+# variants finally get tested, and cannot drift from `main`.
+
+on:
+  push:
+    # `variant/**` is the self-heal path. A ruleset cannot stop someone pushing
+    # to a generated branch: restricting updates would block this workflow too,
+    # because GITHUB_TOKEN cannot be granted a bypass. Instead, a push to one
+    # triggers an immediate rebuild from `main` that overwrites it. Pushes made
+    # with GITHUB_TOKEN do not trigger workflows, so this cannot loop.
+    branches: [main, "variant/**"]
+  pull_request:
+    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # never let two runs publish the same variant branch at once
+  group: build-variants-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    name: Discover variants
+    runs-on: ubuntu-latest
+    outputs:
+      variants: ${{ steps.list.outputs.variants }}
+    steps:
+      # generated branches carry neither variants/ nor tools/, so a push to one
+      # has to be answered by reading the manifests from `main`
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+
+      - name: List variant manifests
+        id: list
+        run: |
+          set -euo pipefail
+          variants=$(find variants -maxdepth 1 -name '*.yml' -exec basename {} .yml \; | sort | jq -R . | jq -c -s .)
+          echo "variants=$variants" >> "$GITHUB_OUTPUT"
+          echo "Found variants: $variants"
+
+  build:
+    name: ${{ matrix.variant }}
+    needs: discover
+    runs-on: ubuntu-latest
+    permissions:
+      # needed by the publish step below; harmless on pull_request runs, which
+      # stop before it
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ${{ fromJson(needs.discover.outputs.variants) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the build bases each variant on its existing published branch, so it
+          # needs the full history and every remote-tracking ref
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+
+      - name: Fetch branches
+        run: git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          # pinned rather than `nightly` so CI matches the reproducible-build claim
+          version: v1.7.1
+
+      # the build commits the generated tree, which needs an author
+      - name: Configure git identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Generate variant
+        env:
+          # a PR builds its own merge commit so the check reflects the change;
+          # everything else publishes whatever is currently on `main`
+          BUILD_REF: ${{ github.event_name == 'pull_request' && github.sha || 'origin/main' }}
+        run: tools/build-variant.sh "${{ matrix.variant }}" --ref "$BUILD_REF"
+
+      - name: Show generated tree
+        run: git -C ".variant-build/${{ matrix.variant }}" show --stat HEAD
+
+      # the whole point of generating variants in CI: the published branch is
+      # compiled and tested, which hand-syncing never did
+      - name: Install dependencies
+        working-directory: .variant-build/${{ matrix.variant }}
+        run: forge soldeer install
+
+      - name: Build
+        working-directory: .variant-build/${{ matrix.variant }}
+        env:
+          FOUNDRY_PROFILE: ci
+        run: forge build --sizes
+
+      - name: Test
+        working-directory: .variant-build/${{ matrix.variant }}
+        env:
+          FOUNDRY_PROFILE: ci
+        run: forge test -vvv
+
+      - name: Check formatting
+        working-directory: .variant-build/${{ matrix.variant }}
+        run: forge fmt --check
+
+      # only publish from main. On pull requests everything above still runs, so
+      # a change that would break a variant fails review rather than the branch.
+      - name: Publish
+        if: github.event_name != 'pull_request'
+        working-directory: .variant-build/${{ matrix.variant }}
+        run: |
+          set -euo pipefail
+          branch=$(awk '/^branch:/ { print $2; exit }' "${{ github.workspace }}/variants/${{ matrix.variant }}.yml")
+          branch=${branch:-${{ matrix.variant }}}
+
+          if git diff --quiet "origin/$branch" HEAD 2>/dev/null; then
+            echo "origin/$branch is already identical to the generated tree, nothing to publish"
+            exit 0
+          fi
+
+          echo "Publishing to origin/$branch"
+          git push origin "HEAD:refs/heads/$branch"
+
+  # A single stable check to require on `main`. The build job's name is the
+  # variant, so requiring it directly would mean editing branch protection every
+  # time a starter is added - exactly the devops cost this change exists to remove.
+  variants:
+    name: Variants
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check variant builds
+        run: |
+          echo "build result: ${{ needs.build.result }}"
+          [ "${{ needs.build.result }}" = "success" ]

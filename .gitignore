@@ -7,6 +7,9 @@ via_ir-out/
 # tracked - run `forge soldeer install` to restore this directory.
 /dependencies/
 
+# Worktrees produced by tools/build-variant.sh
+/.variant-build/
+
 # Ignores development broadcast logs
 broadcast/*
 !/broadcast

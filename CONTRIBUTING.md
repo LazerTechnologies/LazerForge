@@ -6,89 +6,114 @@ The goal of this repo is to provide not only an optimized configuration for expe
 - Expanded [tutorials](/lazerTutorial/README.md) on smart contract development and testing in foundry
 - Helpful test examples
 
-## Branch Structure and Guidelines
+## Branch Structure
+
+> **`main` is the only branch you should ever commit to.**
+>
+> Every other branch is generated from it and will be overwritten without warning.
 
 ### Branch Overview
 
-This repository maintains two primary branches with distinct purposes:
+1. **`main`**
 
-1. **`main` Branch**
+   - Includes all tutorials, examples, and dependencies
+   - The single source of truth, and the only branch that accepts PRs
 
-   - Includes all tutorials, examples, and additional dependencies
-   - Serves as the primary development and reference branch
+2. **`variant/*`** — `variant/minimal`, and the starters planned in the README
+   - Stripped-down versions for users who want a lighter starting point
+   - **Build artifacts**, regenerated from `main` on every push
+   - Never edited by hand
 
-2. **`minimal` Branch**
-   - Provides a stripped-down, essential version of the project
-   - Excludes tutorials, extensive examples, and non-core dependencies
-   - Designed for users who need a lightweight, core implementation
-
-### Branch Preservation Guidelines
-
-- **Do Not Merge Branches Directly**
-  - The `main` and `minimal` branches are intentionally kept separate
-  - Direct merges between these branches are prohibited
-  - Branch protection rules are in place to prevent accidental merging
-
-### Config Contributions
-
-- If you want to contribute changes that should apply to both branches:
-  1. Make changes in the `main` branch first
-  2. Carefully cherry-pick or selectively apply changes to the `minimal` branch
-  3. Ensure that the `minimal` branch remains lean and focused
-
-### Pulling Updates
-
-- To update the `minimal` branch with specific changes from `main`:
-
-  ```bash
-  # Fetch changes
-  git fetch origin main
-
-  # Selectively checkout specific files
-  git checkout origin/main -- foundry.toml
-  git checkout origin/main -- README.md
-  git checkout origin/main -- sample.env
-
-  # Commit only the desired changes
-  git commit -m "Selectively update minimal branch"
-  ```
-
-## Syncing Changes Between Branches
-
-We use a dedicated synchronization workflow to maintain consistency between branches while respecting their different purposes.
-
-**To sync changes from `main` to `minimal`:**
-
-1. Ensure your changes are merged to `main` first
-2. Run the sync script:
+Users select one with the `--branch` flag:
 
 ```bash
-./tools/sync-to-minimal.sh
+forge init --template lazertechnologies/lazerforge --branch variant/minimal <project_name>
 ```
 
-3. The script will:
+Everything generated lives under the `variant/` prefix so that a single branch ruleset matching `variant/*` protects all of them. Adding a starter then needs no repository settings changes at all.
 
-   - Update a dedicated sync branch with the latest from `main`
-   - Open a PR creation page targeting `minimal`
+## How Variant Branches Are Generated
 
-4. During PR review:
-   - Verify only appropriate files are included
-   - Exclude tutorial content or other files not needed in `minimal`
+Each variant is described by a manifest in [`variants/`](variants/), and built by [`tools/build-variant.sh`](tools/build-variant.sh). On every push to `main`, CI regenerates each variant, runs `forge build`, `forge test`, and `forge fmt --check` **against the generated tree**, and publishes it only if all of that passes.
 
-**For emergency fixes in `minimal`:**
+This means variant branches are finally tested, and cannot drift from `main`.
 
-If you need to make a hotfix directly to `minimal` and then sync back to `main`:
-
-1. Make and merge your changes to `minimal`
-2. Run:
+### Building a variant locally
 
 ```bash
-./tools/sync-to-main.sh
+just variant minimal --ref HEAD    # or: tools/build-variant.sh minimal --ref HEAD
 ```
 
-3. Complete a PR to sync these changes back to `main`
+Variants are built from `origin/main` by default, which is what CI wants but almost never what you want while working on a branch — pass `--ref HEAD` to build from your own commits. Note that it builds from a **commit**, not your working tree, so commit before rebuilding.
 
-> Always make feature development PRs to `main` first, and use the sync scripts rather than manually cherry-picking to maintain consistency.
+It writes a git worktree to `.variant-build/minimal/` and stops without pushing, so you can inspect the result:
+
+```bash
+git -C .variant-build/minimal show --stat
+```
+
+Add `--push` to publish, though in normal use CI does that for you.
+
+### Changing what a variant contains
+
+There are two mechanisms. Prefer the first.
+
+**1. Remove a path** — add it to `remove:` in `variants/<variant>.yml`. This covers whole files and directories.
+
+Structure the repo so this is usually enough. Deploy scripts are one per contract — `DeployBalanceManager.s.sol`, `DeployInflationToken.s.sol` — precisely so that a variant which drops a contract just drops its script. A single `Deploy.s.sol` naming one contract would need special handling in every variant that lacks it.
+
+**2. Remove part of a shared file** — wrap the lines in a marker region. This is how `minimal` drops the Uniswap dependencies while `foundry.toml` stays a single file on `main`:
+
+```toml
+# variant:full:start
+'@uniswap/v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
+# variant:full:end
+```
+
+The name list is comma separated (`# variant:full,defi:start` keeps the region for both), and the marker lines are always stripped from generated output. Both `#` and `//` prefixes work, so this covers Solidity as well as TOML. A marker has to be alone on its line, so mentioning one in prose does nothing.
+
+Markdown uses an HTML comment instead, so the marker does not render:
+
+```markdown
+<!-- variant:full:start -->
+
+- The full Uniswap suite is included too
+
+<!-- variant:full:end -->
+```
+
+Markdown markers are only recognised **outside** fenced code blocks, which is what lets this section show the syntax without the build acting on it. To strip a fenced block, put the markers around the fence.
+
+#### Regions can only remove
+
+`full` means `main` itself, and `main` is never generated — it is the input. So a region always shows up on `main`, and a variant build only ever takes content away.
+
+That means you cannot write content that appears on `minimal` but not on `main`. Phrase the shared text so it is true everywhere, and put the extra detail in a `full`-only region. The README does this: the dependency bullet mentions only OpenZeppelin and Solady, and a `variant:full` region adds the Uniswap bullet after it.
+
+### Validation
+
+The build fails rather than producing a broken branch when:
+
+- a manifest entry no longer matches anything
+- a marker region is unbalanced or nested
+- a remapping still points at a dependency the variant removed
+- a removed contract is still imported by a file that survives
+
+It also prunes `soldeer.lock` down to the dependencies the variant actually declares.
+
+### Adding a new variant
+
+Copy `variants/minimal.yml`, adjust it, and open a PR. Keep the `variant/` prefix on the `branch:` value.
+
+That is the whole process. CI discovers manifests automatically, so there is no list to update, no workflow to edit, and — because the ruleset matches `variant/*` — no repository settings to change either.
+
+### If you need to change a variant branch
+
+Don't. Make the change on `main`, or to the variant's manifest, and let the build produce it.
+
+If you push to one anyway, it will not stick: every build replaces the whole tree with generated content, and a push to `variant/**` triggers a rebuild immediately, so the change is reverted within a minute or so.
+
+> **Maintainers:** importable rulesets live in [`.github/rulesets/`](.github/rulesets/), with notes on what each one does and why the variant branches are not update-restricted.
 
 ## Questions or Clarifications
 
