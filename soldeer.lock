@@ -27,6 +27,18 @@ checksum = "f1ce151585a084bb3ec6fb9cbce4520924d41398c3ce8979169de6f7f70d6a81"
 integrity = "e101a06117b3274cd21a3032fa9a55446e842dc0e0e1b0b25008e094a446c453"
 
 [[dependencies]]
+name = "@uniswap-v4-core"
+version = "1.0.1"
+git = "https://github.com/Uniswap/v4-core.git"
+rev = "80311e34080fee64b6fc6c916e9a51a437d0e482"
+
+[[dependencies]]
+name = "@uniswap-v4-periphery"
+version = "1.0.1"
+git = "https://github.com/Uniswap/v4-periphery.git"
+rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d"
+
+[[dependencies]]
 name = "forge-std"
 version = "1.16.2"
 url = "https://soldeer-revisions.s3.amazonaws.com/forge-std/1_16_2_03-07-2026_07:37:45_forge-std-1.16.zip"
@@ -45,15 +57,3 @@ version = "0.0.107"
 url = "https://soldeer-revisions.s3.amazonaws.com/solady/0_0_107_22-01-2024_13:27:46_solady.zip"
 checksum = "6883ca13f637c7b4c89147dcd156bf95a07e5c2d50aa80f2a1e5f2039ddfa6cf"
 integrity = "301933cbb5a7193a011074820c64d79521f0087112f51425f98055eaf6fa6968"
-
-[[dependencies]]
-name = "uniswap-v4-core"
-version = "1.0.1"
-git = "https://github.com/Uniswap/v4-core.git"
-rev = "80311e34080fee64b6fc6c916e9a51a437d0e482"
-
-[[dependencies]]
-name = "uniswap-v4-periphery"
-version = "1.0.1"
-git = "https://github.com/Uniswap/v4-periphery.git"
-rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d"

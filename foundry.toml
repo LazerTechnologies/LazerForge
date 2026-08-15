@@ -19,8 +19,10 @@ remappings = [
     'solady/=dependencies/solady-0.0.107/src/',
     # the published @openzeppelin-contracts package is flattened - the contracts sit
     # at the package root, not under a contracts/ subdirectory like the git repo
+    # `@openzeppelin/contracts/` is the canonical upstream spelling and what this
+    # repo's own imports use. The bare `openzeppelin/contracts/` alias is kept as a
+    # convenience for template users and is not used by any code here.
     '@openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
-    'openzeppelin-contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
     'openzeppelin/contracts/=dependencies/@openzeppelin-contracts-4.9.2/',
     # The Uniswap aliases resolve to the package root, not to contracts/ or src/.
     # These packages import each other by their full published path (v3-periphery
@@ -32,13 +34,8 @@ remappings = [
     '@uniswap/v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
     '@uniswap/v3-core/=dependencies/@uniswap-v3-core-1.0.1/',
     '@uniswap/v3-periphery/=dependencies/@uniswap-v3-periphery-1.4.4/',
-    '@uniswap/v4-core/=dependencies/uniswap-v4-core-1.0.1/',
-    '@uniswap/v4-periphery/=dependencies/uniswap-v4-periphery-1.0.1/',
-    'uniswap-v2-core/=dependencies/@uniswap-v2-core-1.0.1/',
-    'uniswap-v3-core/=dependencies/@uniswap-v3-core-1.0.1/',
-    'uniswap-v3-periphery/=dependencies/@uniswap-v3-periphery-1.4.4/',
-    'uniswap-v4-core/=dependencies/uniswap-v4-core-1.0.1/',
-    'uniswap-v4-periphery/=dependencies/uniswap-v4-periphery-1.0.1/',
+    '@uniswap/v4-core/=dependencies/@uniswap-v4-core-1.0.1/',
+    '@uniswap/v4-periphery/=dependencies/@uniswap-v4-periphery-1.0.1/',
     # v4-periphery imports Permit2 by this alias, so it has to resolve for anything
     # under @uniswap/v4-periphery/ to compile
     'permit2/=dependencies/permit2-1.0.0/'
@@ -153,9 +150,14 @@ solady = "0.0.107"
 "@uniswap-v3-core" = "1.0.1"
 "@uniswap-v3-periphery" = "1.4.4"
 # Uniswap v4 is not published to the Soldeer registry, so these come straight from
-# the official repos, pinned to the commits tagged 1.0.1 on npm.
-uniswap-v4-core = { version = "1.0.1", git = "https://github.com/Uniswap/v4-core.git", rev = "80311e34080fee64b6fc6c916e9a51a437d0e482" }
-uniswap-v4-periphery = { version = "1.0.1", git = "https://github.com/Uniswap/v4-periphery.git", rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d" }
-# transitive dependency of v4-periphery, pinned to the commit tagged with the
-# canonical deployment address 0x000000000022D473030F116dDEE9F6B43aC78BA3
+# the official repos. The names keep the `@uniswap-` prefix of the registry packages
+# so all five Uniswap directories - and the remappings above - share one shape.
+# The versions are the real npm releases; the revs are the commits npm published.
+"@uniswap-v4-core" = { version = "1.0.1", git = "https://github.com/Uniswap/v4-core.git", rev = "80311e34080fee64b6fc6c916e9a51a437d0e482" }
+"@uniswap-v4-periphery" = { version = "1.0.1", git = "https://github.com/Uniswap/v4-periphery.git", rev = "ea2bf2e1ba6863bb809fc2ff791744f308c4a26d" }
+# Transitive dependency of v4-periphery. Permit2 publishes no semver releases, and
+# Soldeer's `name~version` syntax requires one, so "1.0.0" is a placeholder that
+# carries no meaning - only `rev` identifies this dependency. It is pinned to the
+# commit tagged with the canonical deployment address
+# 0x000000000022D473030F116dDEE9F6B43aC78BA3.
 permit2 = { version = "1.0.0", git = "https://github.com/Uniswap/permit2.git", rev = "cc306b601f172c51bc04334a109e98340456620b" }
